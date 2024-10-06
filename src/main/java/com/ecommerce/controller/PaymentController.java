@@ -32,9 +32,8 @@ import com.razorpay.RazorpayException;
 @RequestMapping("/api")
 public class PaymentController {
 
-    private OrderService orderService;
-    private UserService userService;
-    private OrderRepository orderRepository;
+    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @Value("${razorpay.api.key}")
     private String apiKey;
@@ -44,7 +43,6 @@ public class PaymentController {
 
     public PaymentController(OrderService orderService, UserService userService, OrderRepository orderRepository) {
         this.orderService = orderService;
-        this.userService = userService;
         this.orderRepository = orderRepository;
     }
 
