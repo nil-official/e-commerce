@@ -11,12 +11,13 @@ import lombok.*;
 @AllArgsConstructor
 public class PaymentDetails {
 
-    private PaymentMethod paymentMethod;
-    private PaymentStatus status;
-    private String paymentId;
-    private String razorpayPaymentLinkId;
-    private String razorpayPaymentLinkReferenceId;
-    private String razorpayPaymentLinkStatus;
+    private String razorpayAccountId;
     private String razorpayPaymentId;
+    private PaymentMethod razorpayPaymentMethod;
+    private String razorpayPaymentDescription;
+    private PaymentStatus razorpayPaymentStatus;
+
+    private String razorpayPaymentLinkId;
+    private String razorpayPaymentLinkUrl;
 
 }

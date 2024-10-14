@@ -65,4 +65,7 @@ public class Order {
 
     private LocalDateTime createdAt;
 
+    @Column(name = "razorpay_order_id", unique = true)
+    private String razorpayOrderId;
+
 }

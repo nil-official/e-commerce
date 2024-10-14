@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,19 +18,21 @@ public class OrderDto {
 
     private Long id;
 
+    private String orderId;
+
     private LocalDateTime orderDate;
 
     private LocalDateTime deliveryDate;
 
     private Address shippingAddress;
 
-    private PaymentDetails paymentDetails=new PaymentDetails();
+    private PaymentDetails paymentDetails = new PaymentDetails();
 
     private double totalPrice;
 
     private Integer totalDiscountedPrice;
 
-    private Integer discounte;
+    private Integer discount;
 
     private OrderStatus orderStatus;
 

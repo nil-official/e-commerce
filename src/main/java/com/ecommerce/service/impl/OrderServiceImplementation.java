@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.ecommerce.exception.UserException;
 import com.ecommerce.mapper.AddressMapper;
 import com.ecommerce.mapper.OrderMapper;
 import com.ecommerce.dto.AddressDto;
@@ -73,16 +74,17 @@ public class OrderServiceImplementation implements OrderService {
             orderItem.setUserId(item.getUserId());
             orderItem.setDiscountedPrice(item.getDiscountedPrice());
 
-
             OrderItem createdOrderItem = orderItemRepository.save(orderItem);
-
             orderItems.add(createdOrderItem);
         }
 
+        String orderId = "ORD" + System.currentTimeMillis();
 
         Order createdOrder = new Order();
         createdOrder.setUser(user);
+        createdOrder.setOrderId(orderId);
         createdOrder.setOrderItems(orderItems);
+        createdOrder.setDeliveryDate(LocalDateTime.now().plusDays(5));
         createdOrder.setTotalPrice(cart.getTotalPrice());
         createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
         createdOrder.setDiscount(cart.getDiscount());
@@ -91,7 +93,7 @@ public class OrderServiceImplementation implements OrderService {
         createdOrder.setShippingAddress(address);
         createdOrder.setOrderDate(LocalDateTime.now());
         createdOrder.setOrderStatus(OrderStatus.PENDING);
-        createdOrder.getPaymentDetails().setStatus(PaymentStatus.PENDING);
+        createdOrder.getPaymentDetails().setRazorpayPaymentStatus(PaymentStatus.PENDING);
         createdOrder.setCreatedAt(LocalDateTime.now());
 
         Order savedOrder = orderRepository.save(createdOrder);
@@ -104,6 +106,26 @@ public class OrderServiceImplementation implements OrderService {
 
         return resOrder;
 
+    }
+
+    @Override
+    public OrderDto findOrderByOrderId(User user, String orderId) throws UserException, OrderException {
+
+        if (user == null) {
+            throw new UserException("Invalid User");
+        }
+        if (orderId.isEmpty()) {
+            throw new OrderException("Invalid Order ID");
+        }
+        return OrderMapper.toOrderDto(orderRepository.findOrderByOrderId(orderId)
+                .orElseThrow(() -> new OrderException("Order not found with Order ID: " + orderId)));
+
+    }
+
+    @Override
+    public Order findOrderByRazorpayOrderId(String razorpayOrderId) throws OrderException {
+        return orderRepository.findByRazorpayOrderId(razorpayOrderId)
+                .orElseThrow(() -> new OrderException("Order not found with Razorpay Order ID: " + razorpayOrderId));
     }
 
 //	@Override

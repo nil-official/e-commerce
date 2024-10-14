@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,6 +41,7 @@ public class AppConfig {
 				.csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/auth/**").permitAll() // Public access
+						.requestMatchers("/api/webhook/payment").permitAll() // Public access for razorpay webhook
 						.requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin role required
 						.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN") // User and admin access
 						.anyRequest().authenticated() // All other requests require authentication

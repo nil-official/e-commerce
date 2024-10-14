@@ -30,18 +30,18 @@ public class OrderController {
     private UserService userService;
 
     @PostMapping("/")
-    public ResponseEntity<OrderDto> createOrderHandler(@RequestBody AddressDto spippingAddress,
+    public ResponseEntity<OrderDto> createOrderHandler(@RequestBody AddressDto shippingAddress,
                                                        @RequestHeader("Authorization") String jwt) throws UserException, OrderException {
 
         User user = userService.findUserProfileByJwt(jwt);
-        OrderDto order = orderService.createOrder(user, spippingAddress);
-        return new ResponseEntity<OrderDto>(order, HttpStatus.OK);
+        OrderDto order = orderService.createOrder(user, shippingAddress);
+        return new ResponseEntity<>(order, HttpStatus.OK);
 
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<OrderDto>> usersOrderHistoryHandler(@RequestHeader("Authorization")
-                                                                   String jwt) throws OrderException, UserException {
+    public ResponseEntity<List<OrderDto>> usersOrderHistoryHandler(@RequestHeader("Authorization") String jwt)
+            throws OrderException, UserException {
 
         User user = userService.findUserProfileByJwt(jwt);
         List<OrderDto> orders = orderService.usersOrderHistory(user.getId());
@@ -50,11 +50,11 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDto> findOrderHandler(@PathVariable Long orderId,
-                                                     @RequestHeader("Authorization") String jwt) throws OrderException, UserException {
+    public ResponseEntity<OrderDto> findOrderHandler(@RequestHeader("Authorization") String jwt,
+                                                     @PathVariable String orderId) throws UserException, OrderException {
 
         User user = userService.findUserProfileByJwt(jwt);
-        OrderDto orders = orderService.viewOrderById(orderId);
+        OrderDto orders = orderService.findOrderByOrderId(user, orderId);
         return new ResponseEntity<>(orders, HttpStatus.ACCEPTED);
 
     }
