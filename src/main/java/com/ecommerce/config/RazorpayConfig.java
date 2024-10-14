@@ -15,9 +15,17 @@ public class RazorpayConfig {
     @Value("${razorpay.api.secret}")
     private String apiSecret;
 
+    @Value("${razorpay.callback.url}")
+    private String callbackUrl;
+
     @Bean
     public RazorpayClient razorpayClient() throws RazorpayException {
         return new RazorpayClient(apiKey, apiSecret);
+    }
+
+    @Bean
+    public String getCallbackUrl() {
+        return callbackUrl;
     }
 
 }

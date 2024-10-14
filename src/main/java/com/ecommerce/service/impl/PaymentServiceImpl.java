@@ -2,6 +2,7 @@ package com.ecommerce.service.impl;
 
 import com.ecommerce.service.PaymentService;
 import lombok.AllArgsConstructor;
+import lombok.Value;
 import org.springframework.stereotype.Service;
 import com.ecommerce.user.domain.PaymentMethod;
 import org.json.JSONObject;
@@ -28,6 +29,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
     private final RazorpayClient razorpayClient;
+    private final String callbackUrl;
+
 
     @Override
     public PaymentLinkResponse createPaymentLink(Long orderId, String jwt) throws RazorpayException, UserException, OrderException {
@@ -57,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentLinkRequest.put("notify", notify);
 
         paymentLinkRequest.put("reminder_enable", true);
-        paymentLinkRequest.put("callback_url", "http://localhost:3000/payment/" + orderId);
+        paymentLinkRequest.put("callback_url", callbackUrl + orderId);
         paymentLinkRequest.put("callback_method", "get");
 
         PaymentLink payment = razorpayClient.paymentLink.create(paymentLinkRequest);
@@ -75,6 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void processPaymentWebhook(String payload) throws Exception {
+        logger.info("Processing payment webhook: {}", payload);
 
         JSONObject jsonPayload = new JSONObject(payload);
         String eventType = jsonPayload.getString("event");
