@@ -4,6 +4,14 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Properties ignored ###
+application.properties
+application-dev.properties
+application-prod.properties
+
+### Properties allowed ###
+!application-example.properties
+
 ### STS ###
 .apt_generated
 .classpath
