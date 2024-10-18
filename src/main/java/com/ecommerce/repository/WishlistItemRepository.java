@@ -14,8 +14,4 @@ public interface WishlistItemRepository extends JpaRepository<WishlistItem, Long
                                             @Param("size") String size,
                                             @Param("userId") Long userId);
 
-    @Modifying
-    @Query("DELETE From WishlistItem wi Where wi.wishlist.id=:wishlistId And wi.product.id=:productId And wi.userId=:userId")
-    public void deleteWishlistItem(Long wishlistId, Long productId, Long userId);
-
 }
