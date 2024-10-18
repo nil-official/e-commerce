@@ -21,6 +21,13 @@ public class WishlistController {
     private UserService userService;
     private WishlistService wishlistService;
 
+    @GetMapping("/")
+    public ResponseEntity<Wishlist> getUserWishlist(@RequestHeader("Authorization") String jwt) throws UserException, ProductException {
+        User user = userService.findUserProfileByJwt(jwt);
+        Wishlist wishlist = wishlistService.findUserWishlist(user.getId());
+        return new ResponseEntity<>(wishlist, HttpStatus.OK);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addItemToWishlist(@RequestHeader("Authorization") String jwt,
                                                          @RequestBody WishlistDto wishlistDto) throws UserException, ProductException {
@@ -28,15 +35,19 @@ public class WishlistController {
         User user = userService.findUserProfileByJwt(jwt);
         wishlistService.addToWishlist(user.getId(), wishlistDto);
         ApiResponse res = new ApiResponse("Item Added to Wishlist Successfully", true);
-        return new ResponseEntity<ApiResponse>(res, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 
     }
 
-    @GetMapping("/")
-    public ResponseEntity<Wishlist> getUserWishlist(@RequestHeader("Authorization") String jwt) throws UserException, ProductException {
+    @DeleteMapping("/remove/{wishlistItemId}")
+    public ResponseEntity<ApiResponse> removeItemFromWishlist(@RequestHeader("Authorization") String jwt,
+                                                              @PathVariable Long wishlistItemId) throws UserException, ProductException {
+
         User user = userService.findUserProfileByJwt(jwt);
-        Wishlist wishlist = wishlistService.findUserWishlist(user.getId());
-        return new ResponseEntity<Wishlist>(wishlist, HttpStatus.OK);
+        wishlistService.removeFromWishlist(user.getId(), wishlistItemId);
+        ApiResponse res = new ApiResponse("Item Removed from Wishlist Successfully", true);
+        return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+
     }
 
 }

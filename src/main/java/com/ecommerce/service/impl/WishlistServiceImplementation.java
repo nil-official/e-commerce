@@ -2,6 +2,7 @@ package com.ecommerce.service.impl;
 
 import com.ecommerce.dto.WishlistDto;
 import com.ecommerce.exception.ProductException;
+import com.ecommerce.exception.WishlistException;
 import com.ecommerce.modal.*;
 import com.ecommerce.repository.WishlistRepository;
 import com.ecommerce.service.ProductService;
@@ -23,16 +24,16 @@ public class WishlistServiceImplementation implements WishlistService {
     private WishlistItemService wishlistItemService;
 
     @Override
-    public Wishlist findUserWishlist(Long userId) throws ProductException {
+    public Wishlist findUserWishlist(Long userId) throws WishlistException {
         Wishlist wishlist = wishlistRepository.findByUserId(userId);
         if (wishlist == null) {
-            throw new ProductException("Wishlist not found for user with ID: " + userId);
+            throw new WishlistException("Wishlist not found for user with ID: " + userId);
         }
         return wishlist;
     }
 
     @Override
-    public void addToWishlist(Long userId, WishlistDto wishlistDto) throws ProductException {
+    public void addToWishlist(Long userId, WishlistDto wishlistDto) throws WishlistException {
         try {
             // Check if the size is provided in the request body
             if (wishlistDto.getSize() == null || wishlistDto.getSize().isEmpty()) {
@@ -91,8 +92,19 @@ public class WishlistServiceImplementation implements WishlistService {
                 throw new ProductException("Product already exists in the wishlist with the selected size.");
             }
         } catch (Exception e) {
-            throw new ProductException("Failed to add to the wishlist: " + e.getMessage());
+            throw new WishlistException("Failed to add to the wishlist: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void removeFromWishlist(Long userId, Long wishlistItemId) throws WishlistException {
+
+        Wishlist wishlist = wishlistRepository.findByUserId(userId);
+        if (wishlist == null) {
+            throw new WishlistException("Wishlist not found for user with ID: " + userId);
+        }
+        wishlistItemService.deleteWishlistItem(wishlistItemId);
+
     }
 
 }

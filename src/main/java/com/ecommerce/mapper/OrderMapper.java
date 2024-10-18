@@ -18,6 +18,7 @@ public class OrderMapper {
         orderDto.setTotalItem(order.getTotalItem());
         orderDto.setCreatedAt(order.getCreatedAt());
         orderDto.setUserDto(UserMapper.toUserDto(order.getUser()));
+        orderDto.setOrderItems(order.getOrderItems());
         return orderDto;
     }
 }

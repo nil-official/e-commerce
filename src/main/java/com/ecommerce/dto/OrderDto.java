@@ -1,6 +1,7 @@
 package com.ecommerce.dto;
 
 import com.ecommerce.modal.Address;
+import com.ecommerce.modal.OrderItem;
 import com.ecommerce.modal.PaymentDetails;
 import com.ecommerce.user.domain.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,5 +44,7 @@ public class OrderDto {
     private LocalDateTime createdAt;
 
     private UserDto userDto;
+
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 }
