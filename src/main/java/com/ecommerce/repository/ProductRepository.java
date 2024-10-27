@@ -1,5 +1,6 @@
 package com.ecommerce.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -35,5 +36,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minDiscount") Integer minDiscount,
             @Param("sort") String sort
     );
+
+    // Getting all featured products
+    List<Product> findByIsFeaturedTrue();
+
+    // Getting the most recent products added to the catalog
+    @Query("SELECT p FROM Product p WHERE p.createdAt >= :fromDate ORDER BY p.createdAt DESC")
+    List<Product> findNewArrivals(@Param("fromDate") LocalDateTime fromDate);
+
+    // Getting all discounted products
+    @Query("SELECT p FROM Product p WHERE p.discountPercent > 0 ORDER BY p.discountPercent DESC")
+    List<Product> findDiscountedProducts();
     
 }

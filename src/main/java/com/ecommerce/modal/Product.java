@@ -48,6 +48,8 @@ public class Product {
 
     private String color;
 
+    private boolean isFeatured = false;
+
     @ElementCollection
     private Set<Size> sizes = new HashSet<>();
 
@@ -70,7 +72,7 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(brand, category, color, description, discountPercent, discountedPrice, id, imageUrl,
-                numRatings, price, quantity, ratings, reviews, sizes, title);
+                numRatings, price, quantity, ratings, reviews, sizes, title, isFeatured);
     }
 
     @Override
@@ -88,7 +90,8 @@ public class Product {
                 && Objects.equals(id, other.id) && Objects.equals(imageUrl, other.imageUrl)
                 && numRatings == other.numRatings && price == other.price && quantity == other.quantity
                 && Objects.equals(ratings, other.ratings) && Objects.equals(reviews, other.reviews)
-                && Objects.equals(sizes, other.sizes) && Objects.equals(title, other.title);
+                && Objects.equals(sizes, other.sizes) && Objects.equals(title, other.title)
+                && isFeatured == other.isFeatured;
     }
 
 }

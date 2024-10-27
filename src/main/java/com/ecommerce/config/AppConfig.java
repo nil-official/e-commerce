@@ -40,8 +40,7 @@ public class AppConfig {
 		return http
 				.csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/auth/**").permitAll() // Public access
-						.requestMatchers("/api/webhook/payment").permitAll() // Public access for razorpay webhook
+						.requestMatchers("/auth/**", "/public/**", "/api/webhook/payment").permitAll() // Public access
 						.requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin role required
 						.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN") // User and admin access
 						.anyRequest().authenticated() // All other requests require authentication

@@ -38,4 +38,6 @@ public class CreateProductRequest {
 
     private String thirdLevelCategory;
 
+    private boolean isFeatured;
+
 }

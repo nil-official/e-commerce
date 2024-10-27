@@ -72,34 +72,37 @@ public class ProductServiceImplementation implements ProductService {
         product.setTitle(req.getTitle());
         product.setColor(req.getColor());
         product.setDescription(req.getDescription());
+        product.setFeatured(req.isFeatured());
+        product.setPrice(req.getPrice());
         product.setDiscountedPrice(req.getDiscountedPrice());
-        product.setDiscountPercent(req.getDiscountPercent());
         product.setImageUrl(req.getImageUrl());
         product.setBrand(req.getBrand());
-        product.setPrice(req.getPrice());
         product.setSizes(req.getSize());
         product.setQuantity(req.getQuantity());
         product.setCategory(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
 
-        Product savedProduct = productRepository.save(product);
+        // Calculate discountPercent based on price and discountedPrice
+        int price = req.getPrice();
+        int discountedPrice = req.getDiscountedPrice();
+        if (discountedPrice >= 0 && discountedPrice < price) {
+            int discountPercent = ((price - discountedPrice) * 100) / price;
+            product.setDiscountPercent(discountPercent);
+        } else {
+            product.setDiscountPercent(0);
+        }
 
-        System.out.println("products - " + product);
-
-        return savedProduct;
+        // Saving and returning the product
+        return productRepository.save(product);
     }
 
     @Override
     public String deleteProduct(Long productId) throws ProductException {
 
         Product product = findProductById(productId);
-
         System.out.println("delete product " + product.getId() + " - " + productId);
         product.getSizes().clear();
-//		productRepository.save(product);
-//		product.getCategory().
         productRepository.delete(product);
-
         return "Product deleted Successfully";
     }
 
@@ -120,26 +123,31 @@ public class ProductServiceImplementation implements ProductService {
     public Product updateProduct(Long productId, Product req) throws ProductException {
         Product product = findProductById(productId);
 
+        boolean priceUpdated = false;
+        boolean discountedPriceUpdated = false;
+
         if (req.getQuantity() != 0) {
             product.setQuantity(req.getQuantity());
         }
         if (req.getDescription() != null) {
             product.setDescription(req.getDescription());
         }
+        if (req.isFeatured()) {
+            product.setFeatured(true);
+        }
+        if (req.getPrice() != 0) {
+            product.setPrice(req.getPrice());
+            priceUpdated = true;
+        }
         if (req.getDiscountedPrice() != 0) {
             product.setDiscountedPrice(req.getDiscountedPrice());
-        }
-        if (req.getDiscountPercent() != 0) {
-            product.setDiscountPercent(req.getDiscountPercent());
+            discountedPriceUpdated = true;
         }
         if (req.getImageUrl() != null && !req.getImageUrl().isEmpty()) {
             product.setImageUrl(req.getImageUrl());
         }
         if (req.getBrand() != null && !req.getBrand().isEmpty()) {
             product.setBrand(req.getBrand());
-        }
-        if (req.getPrice() != 0) {
-            product.setPrice(req.getPrice());
         }
         if (req.getColor() != null && !req.getColor().isEmpty()) {
             product.setColor(req.getColor());
@@ -150,8 +158,22 @@ public class ProductServiceImplementation implements ProductService {
         if (req.getSizes() != null && !req.getSizes().isEmpty()) {
             product.setSizes(req.getSizes());
         }
+
+        // Recalculate discountPercent if price or discountedPrice was updated
+        if (priceUpdated || discountedPriceUpdated) {
+            int price = product.getPrice();
+            int discountedPrice = product.getDiscountedPrice();
+            if (discountedPrice >= 0 && discountedPrice < price) {
+                int discountPercent = ((price - discountedPrice) * 100) / price;
+                product.setDiscountPercent(discountPercent);  // Set the calculated discountPercent
+            } else {
+                product.setDiscountPercent(0);  // Set to 0 if price or discountedPrice is invalid
+            }
+        }
+
         return productRepository.save(product);
     }
+
 
     @Override
     public List<Product> getAllProducts() {
