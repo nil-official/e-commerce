@@ -40,8 +40,6 @@ public class OrderItem {
 
     private Long userId;
 
-    private LocalDateTime deliveryDate;
-
     @Override
     public int hashCode() {
         return Objects.hash(id, order, price, product, quantity, size, userId);

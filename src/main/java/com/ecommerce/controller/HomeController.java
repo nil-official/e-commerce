@@ -52,10 +52,10 @@ public class HomeController {
         return new ResponseEntity<>(topRatedProducts, HttpStatus.OK);
     }
 
-//    @GetMapping("/best-seller")
-//    public ResponseEntity<List<Product>> getBestSeller() throws ProductException {
-//        List<Product> bestSellerProducts = homeService.getBestSellerProducts();
-//        return new ResponseEntity<>(bestSellerProducts, HttpStatus.OK);
-//    }
+    @GetMapping("/best-seller")
+    public ResponseEntity<List<Product>> getBestSeller() throws ProductException {
+        List<Product> bestSellerProducts = homeService.getBestSellerProducts();
+        return new ResponseEntity<>(bestSellerProducts, HttpStatus.OK);
+    }
 
 }

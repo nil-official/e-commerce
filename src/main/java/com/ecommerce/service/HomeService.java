@@ -10,15 +10,18 @@ import java.util.List;
 public interface HomeService {
 
     // Getting all featured products
-    public List<Product> getFeaturedProducts() throws ProductException;
+    List<Product> getFeaturedProducts() throws ProductException;
 
     // Getting the most recent products added to the catalog
-    public List<Product> getNewArrivals() throws ProductException;
+    List<Product> getNewArrivals() throws ProductException;
 
     // Getting all discounted products
-    public List<Product> getExclusiveDiscounts() throws ProductException;
+    List<Product> getExclusiveDiscounts() throws ProductException;
 
     // Getting all top-rated products
-    public List<Product> getTopRatedProducts() throws ProductException;
+    List<Product> getTopRatedProducts() throws ProductException;
+
+    // Getting all bestseller products
+    List<Product> getBestSellerProducts() throws ProductException;
 
 }
