@@ -47,5 +47,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Getting all discounted products
     @Query("SELECT p FROM Product p WHERE p.discountPercent > 0 ORDER BY p.discountPercent DESC")
     List<Product> findDiscountedProducts();
+
+    // Getting all top-rated products
+    @Query("SELECT p FROM Product p WHERE p.totalRatings > 0 ORDER BY p.averageRating DESC")
+    List<Product> findTopRatedProducts();
     
 }

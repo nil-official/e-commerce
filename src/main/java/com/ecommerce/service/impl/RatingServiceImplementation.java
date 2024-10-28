@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.ecommerce.dto.RatingDto;
+import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.RatingService;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class RatingServiceImplementation implements RatingService {
 
     private RatingRepository ratingRepository;
     private ProductService productService;
+    private ProductRepository productRepository;
     private static final Logger logger = LoggerFactory.getLogger(RatingServiceImplementation.class);
 
     @Override
@@ -33,27 +35,42 @@ public class RatingServiceImplementation implements RatingService {
 
         Product product = productService.findProductById(req.getProductId());
 
-        // get the rating by user
-        Rating ratingByUser = ratingRepository.getRatingByUserAndProduct(user.getId(), product.getId());
-        logger.info("User id: " + user.getId());
-        logger.info("Product id: " + product.getId());
-        logger.info("Rating by user: " + ratingByUser);
+        // Declare rating variable
+        Rating rating;
 
-        // if rating by user is not null then update the rating
+        // Get the rating by user
+        Rating ratingByUser = ratingRepository.getRatingByUserAndProduct(user.getId(), product.getId());
+
+        // If rating by user is not null, update the rating
         if (ratingByUser != null) {
             ratingByUser.setRating(req.getRating());
             ratingByUser.setCreatedAt(LocalDateTime.now());
-            return ratingRepository.save(ratingByUser);
+            rating = ratingRepository.save(ratingByUser);
+        } else {
+            // Otherwise add new rating
+            rating = new Rating();
+            rating.setProduct(product);
+            rating.setUser(user);
+            rating.setRating(req.getRating());
+            rating.setCreatedAt(LocalDateTime.now());
+            ratingRepository.save(rating);
+
+            // Increment totalRatings as this is a new rating from a new user
+            product.setTotalRatings(product.getTotalRatings() + 1);
         }
 
-        // otherwise add new rating
-        Rating rating = new Rating();
-        rating.setProduct(product);
-        rating.setUser(user);
-        rating.setRating(req.getRating());
-        rating.setCreatedAt(LocalDateTime.now());
+        // Calculate and update the averageRating
+        List<Rating> ratingsList = product.getRatings();
+        double totalRatingSum = ratingsList.stream().mapToDouble(Rating::getRating).sum();
+        double averageRating = totalRatingSum / product.getTotalRatings();
 
-        return ratingRepository.save(rating);
+        // Round to 1 decimal place
+        product.setAverageRating(Math.round(averageRating * 10) / 10.0);
+
+        // Save the updated product with new averageRating and totalRatings
+        productRepository.save(product);
+
+        return rating;
     }
 
     @Override

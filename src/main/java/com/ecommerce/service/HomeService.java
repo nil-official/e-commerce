@@ -18,4 +18,7 @@ public interface HomeService {
     // Getting all discounted products
     public List<Product> getExclusiveDiscounts() throws ProductException;
 
+    // Getting all top-rated products
+    public List<Product> getTopRatedProducts() throws ProductException;
+
 }

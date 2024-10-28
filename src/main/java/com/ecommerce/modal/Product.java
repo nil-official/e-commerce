@@ -58,10 +58,12 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rating> ratings = new ArrayList<>();
 
+    private int totalRatings = 0;
+
+    private double averageRating = 0;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
-
-    private int numRatings;
 
     @ManyToOne()
     @JoinColumn(name = "category_id")
@@ -72,7 +74,7 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(brand, category, color, description, discountPercent, discountedPrice, id, imageUrl,
-                numRatings, price, quantity, ratings, reviews, sizes, title, isFeatured);
+                totalRatings, averageRating, price, quantity, ratings, reviews, sizes, title, isFeatured);
     }
 
     @Override
@@ -88,7 +90,8 @@ public class Product {
                 && Objects.equals(color, other.color) && Objects.equals(description, other.description)
                 && discountPercent == other.discountPercent && discountedPrice == other.discountedPrice
                 && Objects.equals(id, other.id) && Objects.equals(imageUrl, other.imageUrl)
-                && numRatings == other.numRatings && price == other.price && quantity == other.quantity
+                && totalRatings == other.totalRatings && averageRating == other.averageRating
+                && price == other.price && quantity == other.quantity
                 && Objects.equals(ratings, other.ratings) && Objects.equals(reviews, other.reviews)
                 && Objects.equals(sizes, other.sizes) && Objects.equals(title, other.title)
                 && isFeatured == other.isFeatured;

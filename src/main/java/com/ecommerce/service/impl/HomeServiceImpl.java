@@ -43,4 +43,13 @@ public class HomeServiceImpl implements HomeService {
         }
     }
 
+    @Override
+    public List<Product> getTopRatedProducts() throws ProductException {
+        try {
+            return productRepository.findTopRatedProducts();
+        } catch (Exception e) {
+            throw new ProductException("Error while fetching top rated products: " + e.getMessage());
+        }
+    }
+
 }
