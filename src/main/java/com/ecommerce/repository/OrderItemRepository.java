@@ -2,7 +2,7 @@ package com.ecommerce.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ecommerce.modal.OrderItem;
+import com.ecommerce.model.OrderItem;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;

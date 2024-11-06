@@ -1,6 +1,6 @@
 package com.ecommerce.mapper;
 
-import com.ecommerce.modal.Order;
+import com.ecommerce.model.Order;
 import com.ecommerce.dto.OrderDto;
 
 public class OrderMapper {

@@ -5,9 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
+import com.ecommerce.model.Product;
 import com.ecommerce.request.CreateProductRequest;
-import com.ecommerce.user.domain.ProductSubCategory;
 
 public interface ProductService {
 

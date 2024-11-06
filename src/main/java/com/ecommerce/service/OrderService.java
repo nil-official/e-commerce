@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.ecommerce.exception.OrderException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.Order;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Order;
+import com.ecommerce.model.User;
 import com.ecommerce.dto.AddressDto;
 import com.ecommerce.dto.OrderDto;
 

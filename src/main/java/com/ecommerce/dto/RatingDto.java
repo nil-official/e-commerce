@@ -1,6 +1,6 @@
 package com.ecommerce.dto;
 
-import com.ecommerce.modal.Rating;
+import com.ecommerce.model.Rating;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

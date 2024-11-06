@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.User;
 import com.ecommerce.service.UserService;
 
 @RestController

@@ -1,6 +1,6 @@
 package com.ecommerce.mapper;
 
-import com.ecommerce.modal.Address;
+import com.ecommerce.model.Address;
 import com.ecommerce.dto.AddressDto;
 
 public class AddressMapper {

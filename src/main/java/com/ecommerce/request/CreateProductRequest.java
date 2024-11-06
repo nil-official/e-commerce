@@ -3,7 +3,7 @@ package com.ecommerce.request;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.ecommerce.modal.Size;
+import com.ecommerce.model.Size;
 import lombok.*;
 
 @Getter

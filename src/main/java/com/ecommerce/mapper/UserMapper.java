@@ -1,6 +1,6 @@
 package com.ecommerce.mapper;
 
-import com.ecommerce.modal.User;
+import com.ecommerce.model.User;
 import com.ecommerce.dto.UserDto;
 
 public class UserMapper {

@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
-import com.ecommerce.modal.Rating;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.Rating;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.RatingRepository;
 import com.ecommerce.request.RatingRequest;
 

@@ -1,7 +1,9 @@
 package com.ecommerce.service.impl;
 
+import com.ecommerce.dto.ProductDto;
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
+import com.ecommerce.mapper.ProductMapper;
+import com.ecommerce.model.Product;
 import com.ecommerce.repository.OrderItemRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.service.HomeService;
@@ -20,48 +22,53 @@ public class HomeServiceImpl implements HomeService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public List<Product> getFeaturedProducts() throws ProductException {
+    public List<ProductDto> getFeaturedProducts() throws ProductException {
         try {
-            return productRepository.findByIsFeaturedTrue();
+            List<Product> featuredProducts = productRepository.findByIsFeaturedTrue();
+            return ProductMapper.toDtoList(featuredProducts);
         } catch (Exception e) {
             throw new ProductException("Error while fetching featured products: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Product> getNewArrivals() throws ProductException {
+    public List<ProductDto> getNewArrivals() throws ProductException {
         try {
-            return productRepository.findNewArrivals(LocalDateTime.now().minusWeeks(1));
+            List<Product> newArrivals = productRepository.findNewArrivals(LocalDateTime.now().minusWeeks(1));
+            return ProductMapper.toDtoList(newArrivals);
         } catch (Exception e) {
             throw new ProductException("Error while fetching new arrivals: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Product> getExclusiveDiscounts() throws ProductException {
+    public List<ProductDto> getExclusiveDiscounts() throws ProductException {
         try {
-            return productRepository.findDiscountedProducts();
+            List<Product> discountedProducts = productRepository.findDiscountedProducts();
+            return ProductMapper.toDtoList(discountedProducts);
         } catch (Exception e) {
             throw new ProductException("Error while fetching discounted products: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Product> getTopRatedProducts() throws ProductException {
+    public List<ProductDto> getTopRatedProducts() throws ProductException {
         try {
-            return productRepository.findTopRatedProducts();
+            List<Product> topRatedProducts = productRepository.findTopRatedProducts();
+            return ProductMapper.toDtoList(topRatedProducts);
         } catch (Exception e) {
             throw new ProductException("Error while fetching top rated products: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Product> getBestSellerProducts() throws ProductException {
+    public List<ProductDto> getBestSellerProducts() throws ProductException {
         try {
-            return orderItemRepository.findBestSellerProducts()
+            List<Product> bestSellerProducts = orderItemRepository.findBestSellerProducts()
                     .stream()
                     .map(result -> (Product) result[0])
                     .collect(Collectors.toList());
+            return ProductMapper.toDtoList(bestSellerProducts);
         } catch (Exception e) {
             throw new ProductException("Error while fetching best seller products: " + e.getMessage());
         }

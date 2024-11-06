@@ -1,6 +1,6 @@
 package com.ecommerce.dto;
 
-import com.ecommerce.modal.Review;
+import com.ecommerce.model.Review;
 import lombok.*;
 
 import java.time.LocalDateTime;

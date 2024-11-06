@@ -1,6 +1,6 @@
 package com.ecommerce.service;
 
-import com.ecommerce.modal.OrderItem;
+import com.ecommerce.model.OrderItem;
 
 public interface OrderItemService {
 	

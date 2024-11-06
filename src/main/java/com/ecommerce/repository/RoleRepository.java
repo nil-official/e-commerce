@@ -1,6 +1,6 @@
 package com.ecommerce.repository;
 
-import com.ecommerce.modal.Role;
+import com.ecommerce.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

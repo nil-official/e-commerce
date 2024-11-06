@@ -1,7 +1,7 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.WishlistException;
-import com.ecommerce.modal.*;
+import com.ecommerce.model.*;
 
 public interface WishlistItemService {
 

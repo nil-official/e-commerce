@@ -3,12 +3,11 @@ package com.ecommerce.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.ecommerce.dto.OrderDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ecommerce.modal.Order;
+import com.ecommerce.model.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 

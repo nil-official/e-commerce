@@ -1,7 +1,7 @@
 package com.ecommerce.service;
 
+import com.ecommerce.dto.ProductDto;
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,18 +10,18 @@ import java.util.List;
 public interface HomeService {
 
     // Getting all featured products
-    List<Product> getFeaturedProducts() throws ProductException;
+    List<ProductDto> getFeaturedProducts() throws ProductException;
 
     // Getting the most recent products added to the catalog
-    List<Product> getNewArrivals() throws ProductException;
+    List<ProductDto> getNewArrivals() throws ProductException;
 
     // Getting all discounted products
-    List<Product> getExclusiveDiscounts() throws ProductException;
+    List<ProductDto> getExclusiveDiscounts() throws ProductException;
 
     // Getting all top-rated products
-    List<Product> getTopRatedProducts() throws ProductException;
+    List<ProductDto> getTopRatedProducts() throws ProductException;
 
     // Getting all bestseller products
-    List<Product> getBestSellerProducts() throws ProductException;
+    List<ProductDto> getBestSellerProducts() throws ProductException;
 
 }

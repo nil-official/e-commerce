@@ -1,6 +1,6 @@
 package com.ecommerce.config;
 
-import com.ecommerce.modal.Role;
+import com.ecommerce.model.Role;
 import com.ecommerce.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

@@ -1,9 +1,8 @@
 package com.ecommerce.service;
 
 import com.ecommerce.dto.WishlistDto;
-import com.ecommerce.exception.ProductException;
 import com.ecommerce.exception.WishlistException;
-import com.ecommerce.modal.Wishlist;
+import com.ecommerce.model.Wishlist;
 
 public interface WishlistService {
 

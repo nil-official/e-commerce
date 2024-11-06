@@ -1,4 +1,4 @@
-package com.ecommerce.modal;
+package com.ecommerce.model;
 
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItem {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class CartItem {
 
     @JsonIgnore
     @ManyToOne
-    private Cart cart;
+    private Order order;
 
     @ManyToOne
     private Product product;
@@ -41,7 +41,7 @@ public class CartItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, price, product, size);
+        return Objects.hash(id, order, price, product, quantity, size, userId);
     }
 
     @Override
@@ -52,9 +52,10 @@ public class CartItem {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CartItem other = (CartItem) obj;
-        return Objects.equals(id, other.id) && Double.doubleToLongBits(price) == Double.doubleToLongBits(other.price)
-                && Objects.equals(product, other.product) && Objects.equals(size, other.size);
+        OrderItem other = (OrderItem) obj;
+        return Objects.equals(id, other.id) && Objects.equals(order, other.order) && Objects.equals(price, other.price)
+                && Objects.equals(product, other.product) && quantity == other.quantity
+                && Objects.equals(size, other.size) && Objects.equals(userId, other.userId);
     }
 
 }

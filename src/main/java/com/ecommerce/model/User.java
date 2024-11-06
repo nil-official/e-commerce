@@ -1,4 +1,4 @@
-package com.ecommerce.modal;
+package com.ecommerce.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

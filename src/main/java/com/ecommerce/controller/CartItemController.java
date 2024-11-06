@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.CartItemException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.CartItem;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.CartItem;
+import com.ecommerce.model.User;
 import com.ecommerce.response.ApiResponse;
 import com.ecommerce.service.CartItemService;
 import com.ecommerce.service.UserService;

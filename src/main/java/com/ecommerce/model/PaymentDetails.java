@@ -1,8 +1,7 @@
-package com.ecommerce.modal;
+package com.ecommerce.model;
 
 import com.ecommerce.user.domain.PaymentMethod;
 import com.ecommerce.user.domain.PaymentStatus;
-import jakarta.persistence.Entity;
 import lombok.*;
 
 @Getter

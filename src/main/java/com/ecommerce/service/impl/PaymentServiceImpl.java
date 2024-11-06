@@ -2,7 +2,6 @@ package com.ecommerce.service.impl;
 
 import com.ecommerce.service.PaymentService;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 import com.ecommerce.user.domain.PaymentMethod;
 import org.json.JSONObject;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ecommerce.exception.OrderException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.Order;
+import com.ecommerce.model.Order;
 import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.response.PaymentLinkResponse;
 import com.ecommerce.service.OrderService;

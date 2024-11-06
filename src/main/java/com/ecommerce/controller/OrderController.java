@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.OrderException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.User;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.UserService;
 

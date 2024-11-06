@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.ProductException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.Rating;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Rating;
+import com.ecommerce.model.User;
 import com.ecommerce.request.RatingRequest;
 import com.ecommerce.service.RatingService;
 import com.ecommerce.service.UserService;

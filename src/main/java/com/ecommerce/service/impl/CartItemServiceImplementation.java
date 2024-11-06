@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.CartItemException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.Cart;
-import com.ecommerce.modal.CartItem;
-import com.ecommerce.modal.Product;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Cart;
+import com.ecommerce.model.CartItem;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.CartItemRepository;
 import com.ecommerce.repository.CartRepository;
 

@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Cart;
-import com.ecommerce.modal.CartItem;
-import com.ecommerce.modal.Product;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Cart;
+import com.ecommerce.model.CartItem;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.CartRepository;
 import com.ecommerce.request.AddItemRequest;
 

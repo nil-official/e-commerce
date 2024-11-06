@@ -1,4 +1,4 @@
-package com.ecommerce.modal;
+package com.ecommerce.model;
 
 import com.ecommerce.user.domain.ProductSize;
 import jakarta.persistence.Embeddable;

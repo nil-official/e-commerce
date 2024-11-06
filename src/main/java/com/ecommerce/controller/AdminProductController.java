@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
+import com.ecommerce.model.Product;
 import com.ecommerce.request.CreateProductRequest;
 import com.ecommerce.response.ApiResponse;
 import com.ecommerce.service.ProductService;

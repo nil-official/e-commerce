@@ -1,8 +1,8 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Review;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Review;
+import com.ecommerce.model.User;
 import com.ecommerce.request.ReviewRequest;
 import com.ecommerce.dto.ReviewDto;
 

@@ -1,6 +1,6 @@
 package com.ecommerce.security;
 
-import com.ecommerce.modal.User;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

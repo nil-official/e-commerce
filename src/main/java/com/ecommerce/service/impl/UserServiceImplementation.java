@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ecommerce.config.JwtTokenProvider;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
 
 @Service

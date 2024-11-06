@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
+import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
-import com.ecommerce.user.domain.ProductSubCategory;
 
 @RestController
 @AllArgsConstructor

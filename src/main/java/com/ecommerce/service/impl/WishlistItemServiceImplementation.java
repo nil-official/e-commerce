@@ -1,10 +1,9 @@
 package com.ecommerce.service.impl;
 
 import com.ecommerce.exception.WishlistException;
-import com.ecommerce.modal.CartItem;
-import com.ecommerce.modal.Product;
-import com.ecommerce.modal.Wishlist;
-import com.ecommerce.modal.WishlistItem;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.Wishlist;
+import com.ecommerce.model.WishlistItem;
 import com.ecommerce.repository.WishlistItemRepository;
 import com.ecommerce.service.WishlistItemService;
 import lombok.AllArgsConstructor;

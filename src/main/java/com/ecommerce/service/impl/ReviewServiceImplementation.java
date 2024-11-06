@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.ProductException;
-import com.ecommerce.modal.Product;
-import com.ecommerce.modal.Review;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.Review;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import com.ecommerce.request.ReviewRequest;

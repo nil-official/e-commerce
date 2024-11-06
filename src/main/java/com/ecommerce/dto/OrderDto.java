@@ -1,8 +1,8 @@
 package com.ecommerce.dto;
 
-import com.ecommerce.modal.Address;
-import com.ecommerce.modal.OrderItem;
-import com.ecommerce.modal.PaymentDetails;
+import com.ecommerce.model.Address;
+import com.ecommerce.model.OrderItem;
+import com.ecommerce.model.PaymentDetails;
 import com.ecommerce.user.domain.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

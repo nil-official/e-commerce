@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.ecommerce.exception.ProductException;
 import com.ecommerce.exception.UserException;
-import com.ecommerce.modal.Cart;
-import com.ecommerce.modal.CartItem;
-import com.ecommerce.modal.User;
+import com.ecommerce.model.Cart;
+import com.ecommerce.model.User;
 import com.ecommerce.request.AddItemRequest;
 import com.ecommerce.response.ApiResponse;
 import com.ecommerce.service.CartService;

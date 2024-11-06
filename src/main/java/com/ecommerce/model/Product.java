@@ -1,4 +1,4 @@
-package com.ecommerce.modal;
+package com.ecommerce.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,9 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 
 import jakarta.persistence.GeneratedValue;
