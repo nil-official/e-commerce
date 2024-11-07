@@ -101,12 +101,17 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public User updateUserRoleById(Long userId) throws UserException {
+    public User updateUserRoleById(Long userId, boolean promote) throws UserException {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
             Set<Role> roles = new HashSet<>();
-            Role userRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RuntimeException("Role not found"));
+            Role userRole;
+            if (promote) {
+                userRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RuntimeException("Role not found"));
+            } else {
+                userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Role not found"));
+            }
             roles.add(userRole);
             user.setRoles(roles);
             return userRepository.save(user);

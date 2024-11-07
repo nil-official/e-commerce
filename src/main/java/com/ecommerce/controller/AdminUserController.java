@@ -50,14 +50,6 @@ public class AdminUserController {
 
     }
 
-    @PostMapping("/makeadmin/{userId}")
-    public ResponseEntity<User> makeAdmin(@PathVariable Long userId) throws UserException {
-
-        User updatedUser = userService.updateUserRoleById(userId);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-
-    }
-
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUserById(@PathVariable Long userId, @RequestHeader("Authorization") String jwt) {
 

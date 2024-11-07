@@ -1,32 +1,37 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.response.ApiResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommerce.exception.UserException;
 import com.ecommerce.model.User;
 import com.ecommerce.service.UserService;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-	
-	private UserService userService;
-	
-	public UserController(UserService userService) {
-		this.userService=userService;
-	}
-	
-	@GetMapping("/profile")
-	public ResponseEntity<User> getUserProfileHandler(@RequestHeader("Authorization") String jwt) throws UserException{
 
-		System.out.println("/api/users/profile");
-		User user=userService.findUserProfileByJwt(jwt);
-		return new ResponseEntity<User>(user,HttpStatus.ACCEPTED);
-	}
+    private UserService userService;
+
+    @GetMapping("/profile")
+    public ResponseEntity<User> getUserProfileHandler(@RequestHeader("Authorization") String jwt) throws UserException {
+
+        User user = userService.findUserProfileByJwt(jwt);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse> deleteUserHandler(@RequestHeader("Authorization") String jwt) throws UserException {
+
+        User user = userService.findUserProfileByJwt(jwt);
+        String res = userService.deleteUserById(user.getId());
+        return new ResponseEntity<>(new ApiResponse(res, true), HttpStatus.OK);
+
+    }
 
 }

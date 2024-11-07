@@ -18,6 +18,6 @@ public interface UserService {
 
     List<User> findAllUsers();
 
-    User updateUserRoleById(Long userId) throws UserException;
+    User updateUserRoleById(Long userId, boolean promote) throws UserException;
 
 }
