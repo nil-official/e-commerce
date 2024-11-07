@@ -10,13 +10,24 @@ public class UserMapper {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
-//        userDto.setRole(user.getRole());
+        userDto.setRoles(user.getRoles());
         userDto.setMobile(user.getMobile());
-//        userDto.setAddresses(user.getAddresses());
-//        userDto.setPaymentInformation(user.getPaymentInformation());
-//        userDto.setRatings(user.getRatings());
-//        userDto.setReviews(user.getReviews());
         userDto.setCreatedAt(user.getCreatedAt());
         return userDto;
+    }
+
+    public static void updateUser(User existingUserData, UserDto updatedUserData) {
+        if (updatedUserData.getFirstName() != null) {
+            existingUserData.setFirstName(updatedUserData.getFirstName());
+        }
+        if (updatedUserData.getLastName() != null) {
+            existingUserData.setLastName(updatedUserData.getLastName());
+        }
+        if (updatedUserData.getEmail() != null) {
+            existingUserData.setEmail(updatedUserData.getEmail());
+        }
+        if (updatedUserData.getMobile() != null) {
+            existingUserData.setMobile(updatedUserData.getMobile());
+        }
     }
 }
