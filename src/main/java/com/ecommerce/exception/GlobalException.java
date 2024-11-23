@@ -74,4 +74,16 @@ public class GlobalException {
 
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorDetails> InvalidTokenExceptionHandler(InvalidTokenException ie, WebRequest req) {
+        ErrorDetails err = new ErrorDetails(ie.getMessage(), req.getDescription(false), LocalDateTime.now());
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorDetails> TokenExpiredExceptionHandler(TokenExpiredException te, WebRequest req) {
+        ErrorDetails err = new ErrorDetails(te.getMessage(), req.getDescription(false), LocalDateTime.now());
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
 }

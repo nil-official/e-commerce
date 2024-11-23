@@ -7,9 +7,12 @@ import com.ecommerce.model.Role;
 import com.ecommerce.model.VerifyToken;
 import com.ecommerce.repository.RoleRepository;
 import com.ecommerce.repository.VerifyTokenRepository;
+import com.ecommerce.request.ForgotPasswordRequest;
 import com.ecommerce.request.RegisterRequest;
+import com.ecommerce.request.ResetPasswordRequest;
 import com.ecommerce.response.ApiResponse;
 import com.ecommerce.security.CustomUserDetailsService;
+import com.ecommerce.service.AuthService;
 import com.ecommerce.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +55,7 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
     private CustomUserDetailsService customUserDetails;
     private CartService cartService;
+    private final AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> signupHandler(@Valid @RequestBody RegisterRequest registerRequest, final HttpServletRequest request) throws UserException, MessagingException {
@@ -165,4 +169,24 @@ public class AuthController {
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
 
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse> forgotPasswordHandler(@RequestBody ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest request)
+            throws UserException, MessagingException {
+
+        authService.sendResetPasswordEmail(forgotPasswordRequest.getEmail(), request);
+        ApiResponse apiResponse = new ApiResponse("Password reset link sent to your email.", true);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPasswordHandler(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+
+        authService.resetPassword(resetPasswordRequest.getToken(), resetPasswordRequest.getNewPassword());
+        ApiResponse apiResponse = new ApiResponse("Password reset successfully! You can now log in with your new password.", true);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    }
+
 }

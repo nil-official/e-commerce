@@ -23,7 +23,7 @@ public class VerifyToken {
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
