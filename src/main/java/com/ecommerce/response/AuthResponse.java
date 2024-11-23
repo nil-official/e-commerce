@@ -8,6 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class AuthResponse {
+
 	private String jwt;
+	private String role;
 	private boolean status;
+
 }

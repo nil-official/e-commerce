@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface EmailService {
 
-    void sendVerificationEmail(String to, String token, final HttpServletRequest request) throws MessagingException;
+    void sendVerificationEmail(String toEmail, String verifyLink) throws MessagingException;
 
     void sendResetPasswordEmail(String toEmail, String resetLink) throws MessagingException;
 

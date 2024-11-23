@@ -47,124 +47,32 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private RoleRepository roleRepository;
-    private VerifyTokenRepository verifyTokenRepository;
-    private EmailService emailService;
-    private JwtTokenProvider jwtTokenProvider;
-    private CustomUserDetailsService customUserDetails;
-    private CartService cartService;
     private final AuthService authService;
+    private UserRepository userRepository;
+    private VerifyTokenRepository verifyTokenRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signupHandler(@Valid @RequestBody RegisterRequest registerRequest, final HttpServletRequest request) throws UserException, MessagingException {
+    public ResponseEntity<ApiResponse> signupHandler(@Valid @RequestBody RegisterRequest registerRequest)
+            throws UserException, MessagingException {
 
-        // Check if user with the given email already exists
-        User isEmailExist = userRepository.findByEmail(registerRequest.getEmail());
-        if (isEmailExist != null) {
-            throw new UserException("Email Is Already Used With Another Account");
-        }
-
-        // Creating a User object
-        User user = new User();
-        user.setFirstName(registerRequest.getFirstName());
-        user.setLastName(registerRequest.getLastName());
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-
-        // Adding roles
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Role not found"));
-        roles.add(userRole);
-        user.setRoles(roles);
-
-        // Saving the object into DB
-        User savedUser = userRepository.save(user);
-
-        // Creating a cart for the new user
-        cartService.createCart(savedUser);
-
-        // Creating an email verification token and saving it into DB
-        String token = UUID.randomUUID().toString();
-        VerifyToken verifyToken = new VerifyToken();
-        verifyToken.setToken(token);
-        verifyToken.setUser(savedUser);
-        verifyToken.setExpiryDate(LocalDateTime.now().plusHours(24));
-        verifyTokenRepository.save(verifyToken);
-
-        // Sending the email verification link
-        emailService.sendVerificationEmail(savedUser.getEmail(), token, request);
-
+        authService.signUp(registerRequest);
         ApiResponse apiResponse = new ApiResponse("User Registered Successfully! Please verify your email to login!", true);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> signinHandler(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> signinHandler(@Valid @RequestBody LoginRequest loginRequest) {
 
-        String username = loginRequest.getEmail();
-        String password = loginRequest.getPassword();
+        AuthResponse authResponse = authService.signIn(loginRequest);
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
 
-        User existingUser = userRepository.findByEmail(loginRequest.getEmail());
-
-        if (!existingUser.isVerified()) {
-            throw new UserNotVerifiedException("User is not verified!");
-        }
-
-        System.out.println(username + " ----- " + password);
-
-        Authentication authentication = authenticate(username, password);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtTokenProvider.generateToken(authentication);
-
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setStatus(true);
-        authResponse.setJwt(token);
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.OK);
-    }
-
-    private Authentication authenticate(String username, String password) {
-
-        UserDetails userDetails = customUserDetails.loadUserByUsername(username);
-
-        System.out.println("sign in userDetails - " + userDetails);
-
-        if (userDetails == null) {
-            System.out.println("sign in userDetails - null " + userDetails);
-            throw new BadCredentialsException("Invalid username or password");
-        }
-        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            System.out.println("sign in userDetails - password not match " + userDetails);
-            throw new BadCredentialsException("Invalid username or password");
-        }
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     @GetMapping("/verify")
     public ResponseEntity<ApiResponse> verifyHandler(@RequestParam String token) {
 
-        // Finding the provided token from DB
-        VerifyToken verificationToken = verifyTokenRepository.findByToken(token);
-
-        // Handling the exception when no token found
-        if (verificationToken == null) {
-            throw new InvalidTokenException("Token not found.");
-        }
-
-        // Handling the exception when token expired
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new TokenExpiredException("Token got expired.");
-        }
-
-        // Marking the user as verified and deleting the token from DB
-        User user = verificationToken.getUser();
-        user.setVerified(true);
-        userRepository.save(user);
-        verifyTokenRepository.delete(verificationToken);
-
+        authService.verifyAccount(token);
         ApiResponse apiResponse = new ApiResponse("Email Verified Successfully! Please login to continue..", true);
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
 

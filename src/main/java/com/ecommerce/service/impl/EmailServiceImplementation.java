@@ -20,31 +20,23 @@ public class EmailServiceImplementation implements EmailService {
 
     @Async
     @Override
-    public void sendVerificationEmail(String to, String token, final HttpServletRequest request) throws MessagingException {
-
+    public void sendVerificationEmail(String toEmail, String verifyLink) throws MessagingException {
+        // Create email content
         String subject = "Email Verification";
-        String scheme = request.getScheme();
-        String host = request.getServerName();
-        int port = request.getServerPort();
-        String link = scheme + "://" + host + (port != 80 && port != 443 ? ":" + port : "");
-
         String content = "<p>Please verify your email by clicking the link below:</p>"
-                + "<a href=\"" + link + "/auth/verify?token=" + HtmlUtils.htmlEscape(token) + "\">Verify</a>";
+                + "<a href=\"" + verifyLink + "\">Verify Email</a>";
 
-        sendEmail(to, subject, content);
+        // Send the email
+        sendEmail(toEmail, subject, content);
     }
 
     @Async
     @Override
     public void sendResetPasswordEmail(String toEmail, String resetLink) throws MessagingException {
-        // Extract token from the reset link
-        String token = resetLink.substring(resetLink.lastIndexOf("=") + 1); // Extracts token after '='
-
         // Create email content
         String subject = "Reset Your Password";
         String content = "<p>You have requested to reset your password. Click the link below to reset it:</p>"
                 + "<a href=\"" + resetLink + "\">Reset Password</a>"
-                + "<p><b>Token:</b> " + token + "</p>"
                 + "<p><b>Note:</b> This link is valid for 1 hour only.</p>";
 
         // Send the email
