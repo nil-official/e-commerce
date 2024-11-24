@@ -26,6 +26,7 @@ public class UserDto {
     private Set<Role> roles;
     private String mobile;
     private Date dob;
+    private int totalAddresses;
     private int totalOrders;
     private int totalWishlists;
     private LocalDateTime createdAt;

@@ -13,6 +13,7 @@ public class UserMapper {
         userDto.setRoles(user.getRoles());
         userDto.setMobile(user.getMobile());
         userDto.setDob(user.getDob());
+        userDto.setTotalAddresses(user.getAddresses() != null ? user.getAddresses().size() : 0);
         userDto.setTotalOrders(user.getOrders() != null ? user.getOrders().size() : 0);
         if (user.getWishlists() != null) {
             int totalWishlistItems = user.getWishlists().stream()
