@@ -39,6 +39,17 @@ public class OrderController {
 
     }
 
+    // Overloaded method
+    @PostMapping("/{addressId}")
+    public ResponseEntity<OrderDto> createOrderHandler(@PathVariable Long addressId,
+                                                       @RequestHeader("Authorization") String jwt) throws UserException, OrderException {
+
+        User user = userService.findUserProfileByJwt(jwt);
+        OrderDto order = orderService.createOrder(user, addressId);
+        return new ResponseEntity<>(order, HttpStatus.OK);
+
+    }
+
     @GetMapping("/user")
     public ResponseEntity<List<OrderDto>> usersOrderHistoryHandler(@RequestHeader("Authorization") String jwt)
             throws OrderException, UserException {

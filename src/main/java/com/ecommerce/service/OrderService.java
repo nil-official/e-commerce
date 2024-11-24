@@ -13,6 +13,8 @@ public interface OrderService {
 
     public OrderDto createOrder(User user, AddressDto shippingAddress) throws OrderException;
 
+    public OrderDto createOrder(User user, Long addressId) throws OrderException;
+
     public Order findOrderById(Long orderId) throws OrderException;
 
     public OrderDto findOrderByOrderId(User user, String orderId) throws UserException, OrderException;

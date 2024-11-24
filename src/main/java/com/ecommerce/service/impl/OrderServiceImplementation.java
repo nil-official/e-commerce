@@ -40,6 +40,57 @@ public class OrderServiceImplementation implements OrderService {
     private UserRepository userRepository;
     private OrderItemRepository orderItemRepository;
 
+    private OrderDto generateOrder(User user, Address address) {
+        // Get the cart of the user
+        Cart cart = cartService.findUserCart(user.getId());
+
+        // Create a new empty order items list
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        // Loop through the cart items and create order items
+        for (CartItem item : cart.getCartItems()) {
+            OrderItem orderItem = new OrderItem();
+
+            orderItem.setPrice(item.getPrice());
+            orderItem.setProduct(item.getProduct());
+            orderItem.setQuantity(item.getQuantity());
+            orderItem.setSize(item.getSize());
+            orderItem.setUserId(item.getUserId());
+            orderItem.setDiscountedPrice(item.getDiscountedPrice());
+
+            OrderItem createdOrderItem = orderItemRepository.save(orderItem);
+            orderItems.add(createdOrderItem);
+        }
+        // Generate a unique order ID
+        String orderId = "ORD" + System.currentTimeMillis();
+
+        // Create a new order object
+        Order createdOrder = new Order();
+        createdOrder.setUser(user);
+        createdOrder.setOrderId(orderId);
+        createdOrder.setOrderItems(orderItems);
+        createdOrder.setDeliveryDate(LocalDateTime.now().plusDays(5));
+        createdOrder.setTotalPrice(cart.getTotalPrice());
+        createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
+        createdOrder.setDiscount(cart.getDiscount());
+        createdOrder.setTotalItem(cart.getTotalItem());
+        createdOrder.setShippingAddress(address);
+        createdOrder.setOrderDate(LocalDateTime.now());
+        createdOrder.setOrderStatus(OrderStatus.PENDING);
+        createdOrder.getPaymentDetails().setRazorpayPaymentStatus(PaymentStatus.PENDING);
+        createdOrder.setCreatedAt(LocalDateTime.now());
+        // Save the order
+        Order savedOrder = orderRepository.save(createdOrder);
+        // Map the saved order to OrderDto
+        OrderDto resOrder = OrderMapper.toOrderDto(savedOrder);
+        for (OrderItem item : orderItems) {
+            item.setOrder(savedOrder);
+            orderItemRepository.save(item);
+        }
+
+        return resOrder;
+    }
+
     @Override
     public OrderDto createOrder(User user, AddressDto add) throws OrderException {
 
@@ -60,50 +111,16 @@ public class OrderServiceImplementation implements OrderService {
         user.getAddresses().add(address);
         userRepository.save(user);
 
-        Cart cart = cartService.findUserCart(user.getId());
-        List<OrderItem> orderItems = new ArrayList<>();
+        return generateOrder(user, address);
+    }
 
-        for (CartItem item : cart.getCartItems()) {
-            OrderItem orderItem = new OrderItem();
+    @Override
+    public OrderDto createOrder(User user, Long addressId) throws OrderException {
+        // Get the address from the addressId
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new OrderException("Address not found with Address ID: " + addressId));
 
-            orderItem.setPrice(item.getPrice());
-            orderItem.setProduct(item.getProduct());
-            orderItem.setQuantity(item.getQuantity());
-            orderItem.setSize(item.getSize());
-            orderItem.setUserId(item.getUserId());
-            orderItem.setDiscountedPrice(item.getDiscountedPrice());
-
-            OrderItem createdOrderItem = orderItemRepository.save(orderItem);
-            orderItems.add(createdOrderItem);
-        }
-
-        String orderId = "ORD" + System.currentTimeMillis();
-
-        Order createdOrder = new Order();
-        createdOrder.setUser(user);
-        createdOrder.setOrderId(orderId);
-        createdOrder.setOrderItems(orderItems);
-        createdOrder.setDeliveryDate(LocalDateTime.now().plusDays(5));
-        createdOrder.setTotalPrice(cart.getTotalPrice());
-        createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
-        createdOrder.setDiscount(cart.getDiscount());
-        createdOrder.setTotalItem(cart.getTotalItem());
-
-        createdOrder.setShippingAddress(address);
-        createdOrder.setOrderDate(LocalDateTime.now());
-        createdOrder.setOrderStatus(OrderStatus.PENDING);
-        createdOrder.getPaymentDetails().setRazorpayPaymentStatus(PaymentStatus.PENDING);
-        createdOrder.setCreatedAt(LocalDateTime.now());
-
-        Order savedOrder = orderRepository.save(createdOrder);
-
-        OrderDto resOrder = OrderMapper.toOrderDto(savedOrder);
-        for (OrderItem item : orderItems) {
-            item.setOrder(savedOrder);
-            orderItemRepository.save(item);
-        }
-
-        return resOrder;
+        return generateOrder(user, address);
 
     }
 
