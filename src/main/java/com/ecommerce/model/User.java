@@ -2,6 +2,7 @@ package com.ecommerce.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,8 @@ public class User {
     private String email;
 
     private String mobile;
+
+    private Date dob;
 
     private boolean isVerified = false;
 

@@ -1,5 +1,6 @@
 package com.ecommerce.dto;
 
+import com.ecommerce.model.Order;
 import com.ecommerce.model.Role;
 import com.ecommerce.user.domain.UserRole;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -22,6 +25,9 @@ public class UserDto {
     private String email;
     private Set<Role> roles;
     private String mobile;
+    private Date dob;
+    private int totalOrders;
+    private int totalWishlists;
     private LocalDateTime createdAt;
 
 }

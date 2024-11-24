@@ -20,31 +20,18 @@ import java.util.List;
 public class OrderDto {
 
     private Long id;
-
     private String orderId;
-
     private LocalDateTime orderDate;
-
     private LocalDateTime deliveryDate;
-
     private Address shippingAddress;
-
     private PaymentDetails paymentDetails = new PaymentDetails();
-
     private double totalPrice;
-
     private Integer totalDiscountedPrice;
-
     private Integer discount;
-
     private OrderStatus orderStatus;
-
     private int totalItem;
-
     private LocalDateTime createdAt;
-
     private UserDto userDto;
-
     private List<OrderItem> orderItems = new ArrayList<>();
 
 }

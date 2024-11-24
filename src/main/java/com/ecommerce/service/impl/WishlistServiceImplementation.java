@@ -5,6 +5,7 @@ import com.ecommerce.exception.ProductException;
 import com.ecommerce.exception.WishlistException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.WishlistRepository;
+import com.ecommerce.request.AddToWishlistRequest;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.WishlistItemService;
 import com.ecommerce.service.WishlistService;
@@ -32,15 +33,15 @@ public class WishlistServiceImplementation implements WishlistService {
     }
 
     @Override
-    public void addToWishlist(Long userId, WishlistDto wishlistDto) throws WishlistException {
+    public void addToWishlist(Long userId, AddToWishlistRequest addToWishlistRequest) throws WishlistException {
         try {
             // Check if the size is provided in the request body
-            if (wishlistDto.getSize() == null || wishlistDto.getSize().isEmpty()) {
+            if (addToWishlistRequest.getSize() == null || addToWishlistRequest.getSize().isEmpty()) {
                 throw new ProductException("Size cannot be null or empty.");
             }
 
             // Find the product to be added
-            Product product = productService.findProductById(wishlistDto.getProductId());
+            Product product = productService.findProductById(addToWishlistRequest.getProductId());
 
             // Validate the size against available sizes
             if (product.getSizes() == null || product.getSizes().isEmpty()) {
@@ -50,16 +51,16 @@ public class WishlistServiceImplementation implements WishlistService {
             // Validate if the requested size is available
             ProductSize requestedSize;
             try {
-                requestedSize = ProductSize.valueOf(wishlistDto.getSize().toUpperCase()); // Convert to enum
+                requestedSize = ProductSize.valueOf(addToWishlistRequest.getSize().toUpperCase()); // Convert to enum
             } catch (IllegalArgumentException e) {
-                throw new ProductException("Invalid size: " + wishlistDto.getSize());
+                throw new ProductException("Invalid size: " + addToWishlistRequest.getSize());
             }
 
             boolean sizeAvailable = product.getSizes().stream()
                     .anyMatch(size -> size.getName() == requestedSize && size.getQuantity() > 0);
 
             if (!sizeAvailable) {
-                throw new ProductException("Size " + wishlistDto.getSize() + " is not available for this product.");
+                throw new ProductException("Size " + addToWishlistRequest.getSize() + " is not available for this product.");
             }
 
             // Find the user's wishlist or create a new one if it doesn't exist

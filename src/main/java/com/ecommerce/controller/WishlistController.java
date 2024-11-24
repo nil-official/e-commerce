@@ -5,6 +5,7 @@ import com.ecommerce.exception.ProductException;
 import com.ecommerce.exception.UserException;
 import com.ecommerce.model.User;
 import com.ecommerce.model.Wishlist;
+import com.ecommerce.request.AddToWishlistRequest;
 import com.ecommerce.response.ApiResponse;
 import com.ecommerce.service.UserService;
 import com.ecommerce.service.WishlistService;
@@ -30,10 +31,10 @@ public class WishlistController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addItemToWishlist(@RequestHeader("Authorization") String jwt,
-                                                         @RequestBody WishlistDto wishlistDto) throws UserException, ProductException {
+                                                         @RequestBody AddToWishlistRequest addToWishlistRequest) throws UserException, ProductException {
 
         User user = userService.findUserProfileByJwt(jwt);
-        wishlistService.addToWishlist(user.getId(), wishlistDto);
+        wishlistService.addToWishlist(user.getId(), addToWishlistRequest);
         ApiResponse res = new ApiResponse("Item Added to Wishlist Successfully", true);
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 

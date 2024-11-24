@@ -32,7 +32,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long userId, @RequestHeader("Authorization") String jwt) throws UserException {
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long userId) throws UserException {
 
         User user = userService.findUserById(userId);
         UserDto userDto = UserMapper.toUserDto(user);
@@ -42,8 +42,7 @@ public class AdminUserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> updateUserById(@PathVariable Long userId,
-                                                  @RequestBody UserDto userDto,
-                                                  @RequestHeader("Authorization") String jwt) throws UserException {
+                                                  @RequestBody UserDto userDto) throws UserException {
 
         User updatedUser = userService.updateUserById(userId, userDto);
         return new ResponseEntity<>(UserMapper.toUserDto(updatedUser), HttpStatus.OK);
@@ -51,7 +50,7 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable Long userId, @RequestHeader("Authorization") String jwt) {
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable Long userId) {
 
         String message = userService.deleteUserById(userId);
         ApiResponse apiResponse = new ApiResponse(message, true);

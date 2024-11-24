@@ -12,6 +12,16 @@ public class UserMapper {
         userDto.setEmail(user.getEmail());
         userDto.setRoles(user.getRoles());
         userDto.setMobile(user.getMobile());
+        userDto.setDob(user.getDob());
+        userDto.setTotalOrders(user.getOrders() != null ? user.getOrders().size() : 0);
+        if (user.getWishlists() != null) {
+            int totalWishlistItems = user.getWishlists().stream()
+                    .mapToInt(wishlist -> wishlist.getWishlistItems().size())
+                    .sum();
+            userDto.setTotalWishlists(totalWishlistItems);
+        } else {
+            userDto.setTotalWishlists(0);
+        }
         userDto.setCreatedAt(user.getCreatedAt());
         return userDto;
     }
@@ -28,6 +38,9 @@ public class UserMapper {
         }
         if (updatedUserData.getMobile() != null) {
             existingUserData.setMobile(updatedUserData.getMobile());
+        }
+        if (updatedUserData.getDob() != null) {
+            existingUserData.setDob(updatedUserData.getDob());
         }
     }
 }

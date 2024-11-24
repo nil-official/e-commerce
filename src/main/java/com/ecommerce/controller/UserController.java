@@ -1,5 +1,7 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.dto.UserDto;
+import com.ecommerce.mapper.UserMapper;
 import com.ecommerce.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +20,20 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/profile")
-    public ResponseEntity<User> getUserProfileHandler(@RequestHeader("Authorization") String jwt) throws UserException {
+    public ResponseEntity<UserDto> getUserProfileHandler(@RequestHeader("Authorization") String jwt) throws UserException {
 
         User user = userService.findUserProfileByJwt(jwt);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(UserMapper.toUserDto(user), HttpStatus.OK);
+
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<UserDto> updateUserProfileHandler(@RequestBody UserDto userDto,
+                                                            @RequestHeader("Authorization") String jwt) throws UserException {
+
+        User user = userService.findUserProfileByJwt(jwt);
+        User updatedUser = userService.updateUserById(user.getId(), userDto);
+        return new ResponseEntity<>(UserMapper.toUserDto(updatedUser), HttpStatus.OK);
 
     }
 
