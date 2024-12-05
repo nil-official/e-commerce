@@ -1,6 +1,7 @@
 package com.ecommerce.dto;
 
 import com.ecommerce.model.Address;
+import com.ecommerce.model.OrderAddress;
 import com.ecommerce.model.OrderItem;
 import com.ecommerce.model.PaymentDetails;
 import com.ecommerce.user.domain.OrderStatus;
@@ -23,7 +24,8 @@ public class OrderDto {
     private String orderId;
     private LocalDateTime orderDate;
     private LocalDateTime deliveryDate;
-    private Address shippingAddress;
+//    private Address shippingAddress;
+    private OrderAddress orderAddress = new OrderAddress();
     private PaymentDetails paymentDetails = new PaymentDetails();
     private double totalPrice;
     private Integer totalDiscountedPrice;

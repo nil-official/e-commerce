@@ -10,6 +10,7 @@ import com.ecommerce.mapper.AddressMapper;
 import com.ecommerce.mapper.OrderMapper;
 import com.ecommerce.dto.AddressDto;
 import com.ecommerce.dto.OrderDto;
+import com.ecommerce.model.*;
 import com.ecommerce.service.CartService;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.utility.DtoValidatorUtil;
@@ -17,12 +18,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.OrderException;
-import com.ecommerce.model.Address;
-import com.ecommerce.model.Cart;
-import com.ecommerce.model.CartItem;
-import com.ecommerce.model.Order;
-import com.ecommerce.model.OrderItem;
-import com.ecommerce.model.User;
 import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.OrderItemRepository;
 import com.ecommerce.repository.OrderRepository;
@@ -40,9 +35,13 @@ public class OrderServiceImplementation implements OrderService {
     private UserRepository userRepository;
     private OrderItemRepository orderItemRepository;
 
-    private OrderDto generateOrder(User user, Address address) {
+    private OrderDto generateOrder(User user, OrderAddress orderAddress) throws OrderException {
         // Get the cart of the user
         Cart cart = cartService.findUserCart(user.getId());
+
+        if (cart.getCartItems().isEmpty()) {
+            throw new OrderException("Cart is empty");
+        }
 
         // Create a new empty order items list
         List<OrderItem> orderItems = new ArrayList<>();
@@ -74,7 +73,7 @@ public class OrderServiceImplementation implements OrderService {
         createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
         createdOrder.setDiscount(cart.getDiscount());
         createdOrder.setTotalItem(cart.getTotalItem());
-        createdOrder.setShippingAddress(address);
+        createdOrder.setOrderAddress(orderAddress);
         createdOrder.setOrderDate(LocalDateTime.now());
         createdOrder.setOrderStatus(OrderStatus.PENDING);
         createdOrder.getPaymentDetails().setRazorpayPaymentStatus(PaymentStatus.PENDING);
@@ -92,26 +91,28 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public OrderDto createOrder(User user, AddressDto add) throws OrderException {
+    public OrderDto createOrder(User user, AddressDto addressDto) throws OrderException {
 
-        if (add.getFirstName().isEmpty() ||
-                add.getLastName().isEmpty() ||
-                add.getStreetAddress().isEmpty() ||
-                add.getCity().isEmpty() ||
-                add.getState().isEmpty() ||
-                add.getZipCode().isEmpty() ||
-                add.getMobile().isEmpty()) {
-            throw new OrderException("Invalid Address");
-        }
+        // Validate the address
+        DtoValidatorUtil.validate(addressDto);
 
-        DtoValidatorUtil.validate(add);
-        Address reqAddress = AddressMapper.toAddress(add);
+        OrderAddress orderAddress = new OrderAddress(
+                addressDto.getFirstName(),
+                addressDto.getLastName(),
+                addressDto.getStreetAddress(),
+                addressDto.getCity(),
+                addressDto.getState(),
+                addressDto.getZipCode(),
+                addressDto.getMobile()
+        );
+
+        Address reqAddress = AddressMapper.toAddress(addressDto);
         reqAddress.setUser(user);
         Address address = addressRepository.save(reqAddress);
         user.getAddresses().add(address);
         userRepository.save(user);
 
-        return generateOrder(user, address);
+        return generateOrder(user, orderAddress);
     }
 
     @Override
@@ -120,7 +121,17 @@ public class OrderServiceImplementation implements OrderService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new OrderException("Address not found with Address ID: " + addressId));
 
-        return generateOrder(user, address);
+        OrderAddress orderAddress = new OrderAddress(
+                address.getFirstName(),
+                address.getLastName(),
+                address.getStreetAddress(),
+                address.getCity(),
+                address.getState(),
+                address.getZipCode(),
+                address.getMobile()
+        );
+
+        return generateOrder(user, orderAddress);
 
     }
 

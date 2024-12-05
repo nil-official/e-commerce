@@ -10,7 +10,8 @@ public class OrderMapper {
         orderDto.setOrderId(order.getOrderId());
         orderDto.setOrderDate(order.getOrderDate());
         orderDto.setDeliveryDate(order.getDeliveryDate());
-        orderDto.setShippingAddress(order.getShippingAddress());
+//        orderDto.setShippingAddress(AddressMapper.toAddress(order.getOrderAddress()));
+        orderDto.setOrderAddress(order.getOrderAddress());
         orderDto.setPaymentDetails(order.getPaymentDetails());
         orderDto.setTotalPrice(order.getTotalPrice());
         orderDto.setTotalDiscountedPrice(order.getTotalDiscountedPrice());
