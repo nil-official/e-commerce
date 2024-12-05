@@ -1,5 +1,6 @@
 package com.ecommerce.model;
 
+import com.ecommerce.dto.AddressDto;
 import com.ecommerce.user.domain.OrderStatus;
 
 import jakarta.persistence.*;
@@ -34,8 +35,8 @@ public class Order {
 
     private LocalDateTime deliveryDate;
 
-    @ManyToOne
-    private Address shippingAddress;
+    @Embedded
+    private OrderAddress orderAddress = new OrderAddress();
 
     @Embedded
     private PaymentDetails paymentDetails = new PaymentDetails();

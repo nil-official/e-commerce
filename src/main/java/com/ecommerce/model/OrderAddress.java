@@ -1,6 +1,6 @@
-package com.ecommerce.dto;
+package com.ecommerce.model;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,31 +8,23 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDto {
+public class OrderAddress {
 
-    private Long id;
-
-    @NotBlank
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
-    @NotBlank
     private String streetAddress;
 
-    @NotBlank
     private String city;
 
-    @NotBlank
     private String state;
 
-    @NotBlank
     private String zipCode;
 
-    @NotBlank
     private String mobile;
 
 }
