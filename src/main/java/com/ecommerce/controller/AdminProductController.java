@@ -6,6 +6,8 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,9 +68,9 @@ public class AdminProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Product>> findAllProductHandler() {
+    public ResponseEntity<Page<Product>> findAllProductHandler(@RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
 
-        List<Product> products = productService.getAllProducts();
+        Page<Product> products = productService.getAllProducts(pageNumber, pageSize);
         return new ResponseEntity<>(products, HttpStatus.OK);
 
     }

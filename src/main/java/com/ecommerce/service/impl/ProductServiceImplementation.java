@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.ecommerce.service.ProductService;
 import com.ecommerce.utility.DtoValidatorUtil;
+import com.ecommerce.utility.PaginationUtil;
 import com.ecommerce.utility.QuantityCalculatorUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -215,78 +216,13 @@ public class ProductServiceImplementation implements ProductService {
 
     }
 
-//	@Override
-//	public Product updateProduct(Long productId,Product req) throws ProductException {
-//		Product product=findProductById(productId);
-//
-//		if(req.getQuantity()!=0) {
-//			product.setQuantity(req.getQuantity());
-//		}
-//		if(req.getDescription()!=null) {
-//			product.setDescription(req.getDescription());
-//		}
-//		return productRepository.save(product);
-//	}
-
-//    @Override
-//    public Product updateProduct(Long productId, Product req) throws ProductException {
-//        Product product = findProductById(productId);
-//
-//        boolean priceUpdated = false;
-//        boolean discountedPriceUpdated = false;
-//
-//        if (req.getQuantity() != 0) {
-//            product.setQuantity(req.getQuantity());
-//        }
-//        if (req.getDescription() != null) {
-//            product.setDescription(req.getDescription());
-//        }
-//        if (req.isFeatured()) {
-//            product.setFeatured(true);
-//        }
-//        if (req.getPrice() != 0) {
-//            product.setPrice(req.getPrice());
-//            priceUpdated = true;
-//        }
-//        if (req.getDiscountedPrice() != 0) {
-//            product.setDiscountedPrice(req.getDiscountedPrice());
-//            discountedPriceUpdated = true;
-//        }
-//        if (req.getImageUrl() != null && !req.getImageUrl().isEmpty()) {
-//            product.setImageUrl(req.getImageUrl());
-//        }
-//        if (req.getBrand() != null && !req.getBrand().isEmpty()) {
-//            product.setBrand(req.getBrand());
-//        }
-//        if (req.getColor() != null && !req.getColor().isEmpty()) {
-//            product.setColor(req.getColor());
-//        }
-//        if (req.getTitle() != null && !req.getTitle().isEmpty()) {
-//            product.setTitle(req.getTitle());
-//        }
-//        if (req.getSizes() != null && !req.getSizes().isEmpty()) {
-//            product.setSizes(req.getSizes());
-//        }
-//
-//        // Recalculate discountPercent if price or discountedPrice was updated
-//        if (priceUpdated || discountedPriceUpdated) {
-//            int price = product.getPrice();
-//            int discountedPrice = product.getDiscountedPrice();
-//            if (discountedPrice >= 0 && discountedPrice < price) {
-//                int discountPercent = ((price - discountedPrice) * 100) / price;
-//                product.setDiscountPercent(discountPercent);  // Set the calculated discountPercent
-//            } else {
-//                product.setDiscountPercent(0);  // Set to 0 if price or discountedPrice is invalid
-//            }
-//        }
-//
-//        return productRepository.save(product);
-//    }
-
-
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getAllProducts(Integer pageNumber, Integer pageSize) {
+
+        // Find all products
+        List<Product> products = productRepository.findAll();
+        return PaginationUtil.paginateList(products, pageNumber, pageSize);
+
     }
 
     @Override
@@ -299,13 +235,12 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public List<Product> findProductByCategory(String category) {
-        return productRepository.findByCategory(category);
-    }
+    public Page<Product> searchProduct(String query, Integer pageNumber, Integer pageSize) {
 
-    @Override
-    public List<Product> searchProduct(String query) {
-        return productRepository.searchProduct(query);
+        // Search for products using the query
+        List<Product> products = productRepository.searchProduct(query);
+        return PaginationUtil.paginateList(products, pageNumber, pageSize);
+
     }
 
     @Override
@@ -313,15 +248,15 @@ public class ProductServiceImplementation implements ProductService {
                                        List<String> sizes, Integer minPrice, Integer maxPrice,
                                        Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        // Filter products based on the provided parameters
         List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
 
+        // Filter products based on sizes
         if (!colors.isEmpty()) {
             products = products.stream()
                     .filter(p -> colors.stream().anyMatch(c -> c.equalsIgnoreCase(p.getColor())))
                     .collect(Collectors.toList());
         }
-
         if (stock != null) {
             if (stock.equals("in_stock")) {
                 products = products.stream().filter(p -> p.getQuantity() > 0).collect(Collectors.toList());
@@ -329,11 +264,8 @@ public class ProductServiceImplementation implements ProductService {
                 products = products.stream().filter(p -> p.getQuantity() < 1).collect(Collectors.toList());
             }
         }
-        int startIndex = (int) pageable.getOffset();
-        int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
 
-        List<Product> pageContent = products.subList(startIndex, endIndex);
-        return new PageImpl<>(pageContent, pageable, products.size()); // If color list is empty, do nothing and return all products
+        return PaginationUtil.paginateList(products, pageNumber, pageSize);
 
     }
 
