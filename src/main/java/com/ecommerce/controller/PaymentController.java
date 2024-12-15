@@ -1,8 +1,8 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.service.PaymentService;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

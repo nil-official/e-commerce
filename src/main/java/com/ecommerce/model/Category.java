@@ -35,4 +35,10 @@ public class Category {
 
     private int level;
 
+    public Category(String name, int level, Category parentCategory) {
+        this.name = name;
+        this.level = level;
+        this.parentCategory = parentCategory;
+    }
+
 }
