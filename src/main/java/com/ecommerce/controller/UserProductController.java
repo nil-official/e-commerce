@@ -31,8 +31,6 @@ public class UserProductController {
                                                                       @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
 
         Page<Product> res = productService.getAllProduct(category, color, size, minPrice, maxPrice, minDiscount, sort, stock, pageNumber, pageSize);
-
-        System.out.println("complete products");
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 
     }
@@ -46,11 +44,12 @@ public class UserProductController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<Product>> searchProductHandler(@RequestParam String q) {
+    public ResponseEntity<Page<Product>> searchProductHandler(@RequestParam String query,
+                                                              @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
 
-        List<Product> products = productService.searchProduct(q);
-
-        return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
+        Page<Product> products = productService.searchProduct(query, pageNumber, pageSize);
+        return new ResponseEntity<>(products, HttpStatus.OK);
 
     }
+
 }
