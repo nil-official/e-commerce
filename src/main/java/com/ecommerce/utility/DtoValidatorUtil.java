@@ -9,8 +9,8 @@ import java.util.Set;
 
 public class DtoValidatorUtil {
 
-    private static ValidatorFactory validatorFactory;
-    private static Validator validator;
+    private final static ValidatorFactory validatorFactory;
+    private final static Validator validator;
 
     static {
         validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -20,7 +20,7 @@ public class DtoValidatorUtil {
     public static <T> void validate(T object) {
         Set<ConstraintViolation<T>> violations = validator.validate(object);
         if (!violations.isEmpty()) {
-            throw new RuntimeException("Invalid JSON: " + violations.iterator().next().getPropertyPath() + " " + violations.iterator().next().getMessage());
+            throw new RuntimeException("Invalid JSON: " + violations.iterator().next().getPropertyPath() + " : " + violations.iterator().next().getMessage());
         }
     }
 

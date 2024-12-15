@@ -41,8 +41,8 @@ public class UserProductController {
     public ResponseEntity<Product> findProductByIdHandler(@PathVariable Long productId) throws ProductException {
 
         Product product = productService.findProductById(productId);
+        return new ResponseEntity<>(product, HttpStatus.ACCEPTED);
 
-        return new ResponseEntity<Product>(product, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/products/search")

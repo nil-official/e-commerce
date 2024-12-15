@@ -3,11 +3,13 @@ package com.ecommerce.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.ecommerce.service.ProductService;
-import com.ecommerce.service.UserService;
+import com.ecommerce.utility.DtoValidatorUtil;
+import com.ecommerce.utility.QuantityCalculatorUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,90 +22,197 @@ import com.ecommerce.model.Category;
 import com.ecommerce.model.Product;
 import com.ecommerce.repository.CategoryRepository;
 import com.ecommerce.repository.ProductRepository;
-import com.ecommerce.request.CreateProductRequest;
+import com.ecommerce.request.ProductRequest;
+import com.ecommerce.model.Size;
 
 @Service
 @AllArgsConstructor
 public class ProductServiceImplementation implements ProductService {
 
     private ProductRepository productRepository;
-    private UserService userService;
     private CategoryRepository categoryRepository;
 
     @Override
-    public Product createProduct(CreateProductRequest req) {
+    public Product createProduct(ProductRequest req) throws ProductException {
 
-        System.out.println("create product request - " + req.getTopLevelCategory());
+        // Validate the request
+        DtoValidatorUtil.validate(req);
+
+        // Validate price and discounted price
+        if (req.getDiscountedPrice() > req.getPrice()) {
+            throw new ProductException("Discounted price must be less than or equal to the actual price");
+        }
+
+        // Validate sizes to be not negative
+        for (Size size : req.getSizes()) {
+            if (size.getQuantity() < 0) {
+                throw new ProductException("Size quantity cannot be negative");
+            }
+        }
+
+        // Find or create top-level category
         Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
-
         if (topLevel == null) {
-            Category topLavelCategory = new Category();
-            topLavelCategory.setName(req.getTopLevelCategory());
-            topLavelCategory.setLevel(1);
-            topLevel = categoryRepository.save(topLavelCategory);
+            topLevel = new Category(req.getTopLevelCategory(), 1, null);
+            topLevel = categoryRepository.save(topLevel);
         }
-        System.out.println("topLevel - " + topLevel);
 
-        Category secondLevel = categoryRepository.
-                findByNameAndParant(req.getSecondLevelCategory(), topLevel.getName());
+        // Find or create second-level category
+        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
         if (secondLevel == null) {
-
-            Category secondLavelCategory = new Category();
-            secondLavelCategory.setName(req.getSecondLevelCategory());
-            secondLavelCategory.setParentCategory(topLevel);
-            secondLavelCategory.setLevel(2);
-
-            secondLevel = categoryRepository.save(secondLavelCategory);
+            secondLevel = new Category(req.getSecondLevelCategory(), 2, topLevel);
+            secondLevel = categoryRepository.save(secondLevel);
         }
 
-        Category thirdLevel = categoryRepository.findByNameAndParant(req.getThirdLevelCategory(), secondLevel.getName());
+        // Find or create third-level category
+        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
         if (thirdLevel == null) {
-
-            Category thirdLavelCategory = new Category();
-            thirdLavelCategory.setName(req.getThirdLevelCategory());
-            thirdLavelCategory.setParentCategory(secondLevel);
-            thirdLavelCategory.setLevel(3);
-
-            thirdLevel = categoryRepository.save(thirdLavelCategory);
+            thirdLevel = new Category(req.getThirdLevelCategory(), 3, secondLevel);
+            thirdLevel = categoryRepository.save(thirdLevel);
         }
 
+        // Calculate quantity dynamically from sizes
+        int totalQuantity = QuantityCalculatorUtil.getTotalQuantity(req.getSizes());
 
+        // Create and populate the product
         Product product = new Product();
         product.setTitle(req.getTitle());
-        product.setColor(req.getColor());
         product.setDescription(req.getDescription());
-        product.setFeatured(req.isFeatured());
         product.setPrice(req.getPrice());
         product.setDiscountedPrice(req.getDiscountedPrice());
-        product.setImageUrl(req.getImageUrl());
+        product.setDiscountPercent(((req.getPrice() - req.getDiscountedPrice()) * 100) / req.getPrice());
         product.setBrand(req.getBrand());
-        product.setSizes(req.getSize());
-        product.setQuantity(req.getQuantity());
+        product.setColor(req.getColor());
+        product.setSizes(req.getSizes());
+        product.setQuantity(totalQuantity);
+        product.setImageUrl(req.getImageUrl());
+        product.setFeatured(req.isFeatured());
         product.setCategory(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
 
-        // Calculate discountPercent based on price and discountedPrice
-        int price = req.getPrice();
-        int discountedPrice = req.getDiscountedPrice();
-        if (discountedPrice >= 0 && discountedPrice < price) {
-            int discountPercent = ((price - discountedPrice) * 100) / price;
-            product.setDiscountPercent(discountPercent);
-        } else {
-            product.setDiscountPercent(0);
+        // Save and return the product
+        return productRepository.save(product);
+
+    }
+
+    @Override
+    public Product fullUpdate(Long productId, ProductRequest req) throws ProductException {
+
+        // Validate the incoming Product object
+        DtoValidatorUtil.validate(req);
+
+        // Delegate to the existing update logic (reuse updateProduct logic)
+        return updateProduct(productId, req);
+
+    }
+
+    @Override
+    public Product partialUpdate(Long productId, ProductRequest req) throws ProductException {
+
+        // Delegate to the existing update logic (reuse updateProduct logic)
+        return updateProduct(productId, req);
+
+    }
+
+    public Product updateProduct(Long productId, ProductRequest req) throws ProductException {
+
+        // Find the existing product
+        Product product = findProductById(productId);
+
+        boolean priceUpdated = false;
+        boolean discountedPriceUpdated = false;
+        boolean sizesUpdated = false;
+
+        // Update fields dynamically using a map for non-primitive and non-collection types
+        Map<Runnable, Boolean> updateActions = Map.of(
+                () -> product.setDescription(req.getDescription()), req.getDescription() != null,
+                () -> product.setFeatured(req.isFeatured()), req.isFeatured(),
+                () -> product.setImageUrl(req.getImageUrl()), req.getImageUrl() != null && !req.getImageUrl().isEmpty(),
+                () -> product.setBrand(req.getBrand()), req.getBrand() != null && !req.getBrand().isEmpty(),
+                () -> product.setColor(req.getColor()), req.getColor() != null && !req.getColor().isEmpty(),
+                () -> product.setTitle(req.getTitle()), req.getTitle() != null && !req.getTitle().isEmpty()
+        );
+
+        updateActions.forEach((action, condition) -> {
+            if (condition) action.run();
+        });
+
+        // Update numeric fields directly
+        if (req.getPrice() > 0 && req.getPrice() >= product.getDiscountedPrice()) {
+            product.setPrice(req.getPrice());
+            priceUpdated = true;
+        }
+        if (req.getDiscountedPrice() > 0 && req.getDiscountedPrice() <= product.getPrice()) {
+            product.setDiscountedPrice(req.getDiscountedPrice());
+            discountedPriceUpdated = true;
         }
 
-        // Saving and returning the product
+        // Check and update sizes
+        if (req.getSizes() != null && !req.getSizes().isEmpty()) {
+            // Update sizes if provided
+            product.setSizes(req.getSizes());
+            sizesUpdated = true;
+
+            // Update the total quantity using QuantityCalculatorUtil
+            int updatedQuantity = QuantityCalculatorUtil.getTotalQuantity(product.getSizes());
+            product.setQuantity(updatedQuantity);
+        }
+
+        // Recalculate discountPercent if price or discountedPrice was updated
+        if (priceUpdated || discountedPriceUpdated) {
+            int price = product.getPrice();
+            int discountedPrice = product.getDiscountedPrice();
+            int discountPercent = 0;
+
+            if (discountedPrice >= 0 && discountedPrice < price) {
+                discountPercent = ((price - discountedPrice) * 100) / price;
+            }
+            product.setDiscountPercent(discountPercent);
+        }
+
+        // Update categories
+        if (req.getTopLevelCategory() != null && !req.getTopLevelCategory().isEmpty() &&
+                req.getSecondLevelCategory() != null && !req.getSecondLevelCategory().isEmpty() &&
+                req.getThirdLevelCategory() != null && !req.getThirdLevelCategory().isEmpty()) {
+
+            // Ensure the top-level category exists or create it
+            Category topLevelCategory = categoryRepository.findByName(req.getTopLevelCategory());
+            if (topLevelCategory == null) {
+                topLevelCategory = new Category(req.getTopLevelCategory(), 1, null); // Top-level has no parent
+                topLevelCategory = categoryRepository.save(topLevelCategory);
+            }
+
+            // Ensure the second-level category exists or create it
+            Category secondLevelCategory = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevelCategory.getName());
+            if (secondLevelCategory == null) {
+                secondLevelCategory = new Category(req.getSecondLevelCategory(), 2, topLevelCategory); // Parent is top-level
+                secondLevelCategory = categoryRepository.save(secondLevelCategory);
+            }
+
+            // Ensure the third-level category exists or create it
+            Category thirdLevelCategory = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevelCategory.getName());
+            if (thirdLevelCategory == null) {
+                thirdLevelCategory = new Category(req.getThirdLevelCategory(), 3, secondLevelCategory); // Parent is second-level
+                thirdLevelCategory = categoryRepository.save(thirdLevelCategory);
+            }
+
+            // Associate the product with the third-level category
+            product.setCategory(thirdLevelCategory);
+        }
+
+        // Save and return the updated product
         return productRepository.save(product);
+
     }
 
     @Override
     public String deleteProduct(Long productId) throws ProductException {
 
         Product product = findProductById(productId);
-        System.out.println("delete product " + product.getId() + " - " + productId);
         product.getSizes().clear();
         productRepository.delete(product);
         return "Product deleted Successfully";
+
     }
 
 //	@Override
@@ -119,60 +228,60 @@ public class ProductServiceImplementation implements ProductService {
 //		return productRepository.save(product);
 //	}
 
-    @Override
-    public Product updateProduct(Long productId, Product req) throws ProductException {
-        Product product = findProductById(productId);
-
-        boolean priceUpdated = false;
-        boolean discountedPriceUpdated = false;
-
-        if (req.getQuantity() != 0) {
-            product.setQuantity(req.getQuantity());
-        }
-        if (req.getDescription() != null) {
-            product.setDescription(req.getDescription());
-        }
-        if (req.isFeatured()) {
-            product.setFeatured(true);
-        }
-        if (req.getPrice() != 0) {
-            product.setPrice(req.getPrice());
-            priceUpdated = true;
-        }
-        if (req.getDiscountedPrice() != 0) {
-            product.setDiscountedPrice(req.getDiscountedPrice());
-            discountedPriceUpdated = true;
-        }
-        if (req.getImageUrl() != null && !req.getImageUrl().isEmpty()) {
-            product.setImageUrl(req.getImageUrl());
-        }
-        if (req.getBrand() != null && !req.getBrand().isEmpty()) {
-            product.setBrand(req.getBrand());
-        }
-        if (req.getColor() != null && !req.getColor().isEmpty()) {
-            product.setColor(req.getColor());
-        }
-        if (req.getTitle() != null && !req.getTitle().isEmpty()) {
-            product.setTitle(req.getTitle());
-        }
-        if (req.getSizes() != null && !req.getSizes().isEmpty()) {
-            product.setSizes(req.getSizes());
-        }
-
-        // Recalculate discountPercent if price or discountedPrice was updated
-        if (priceUpdated || discountedPriceUpdated) {
-            int price = product.getPrice();
-            int discountedPrice = product.getDiscountedPrice();
-            if (discountedPrice >= 0 && discountedPrice < price) {
-                int discountPercent = ((price - discountedPrice) * 100) / price;
-                product.setDiscountPercent(discountPercent);  // Set the calculated discountPercent
-            } else {
-                product.setDiscountPercent(0);  // Set to 0 if price or discountedPrice is invalid
-            }
-        }
-
-        return productRepository.save(product);
-    }
+//    @Override
+//    public Product updateProduct(Long productId, Product req) throws ProductException {
+//        Product product = findProductById(productId);
+//
+//        boolean priceUpdated = false;
+//        boolean discountedPriceUpdated = false;
+//
+//        if (req.getQuantity() != 0) {
+//            product.setQuantity(req.getQuantity());
+//        }
+//        if (req.getDescription() != null) {
+//            product.setDescription(req.getDescription());
+//        }
+//        if (req.isFeatured()) {
+//            product.setFeatured(true);
+//        }
+//        if (req.getPrice() != 0) {
+//            product.setPrice(req.getPrice());
+//            priceUpdated = true;
+//        }
+//        if (req.getDiscountedPrice() != 0) {
+//            product.setDiscountedPrice(req.getDiscountedPrice());
+//            discountedPriceUpdated = true;
+//        }
+//        if (req.getImageUrl() != null && !req.getImageUrl().isEmpty()) {
+//            product.setImageUrl(req.getImageUrl());
+//        }
+//        if (req.getBrand() != null && !req.getBrand().isEmpty()) {
+//            product.setBrand(req.getBrand());
+//        }
+//        if (req.getColor() != null && !req.getColor().isEmpty()) {
+//            product.setColor(req.getColor());
+//        }
+//        if (req.getTitle() != null && !req.getTitle().isEmpty()) {
+//            product.setTitle(req.getTitle());
+//        }
+//        if (req.getSizes() != null && !req.getSizes().isEmpty()) {
+//            product.setSizes(req.getSizes());
+//        }
+//
+//        // Recalculate discountPercent if price or discountedPrice was updated
+//        if (priceUpdated || discountedPriceUpdated) {
+//            int price = product.getPrice();
+//            int discountedPrice = product.getDiscountedPrice();
+//            if (discountedPrice >= 0 && discountedPrice < price) {
+//                int discountPercent = ((price - discountedPrice) * 100) / price;
+//                product.setDiscountPercent(discountPercent);  // Set the calculated discountPercent
+//            } else {
+//                product.setDiscountPercent(0);  // Set to 0 if price or discountedPrice is invalid
+//            }
+//        }
+//
+//        return productRepository.save(product);
+//    }
 
 
     @Override
@@ -191,16 +300,12 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     public List<Product> findProductByCategory(String category) {
-
-        System.out.println("category --- " + category);
-        List<Product> products = productRepository.findByCategory(category);
-        return products;
+        return productRepository.findByCategory(category);
     }
 
     @Override
     public List<Product> searchProduct(String query) {
-        List<Product> products = productRepository.searchProduct(query);
-        return products;
+        return productRepository.searchProduct(query);
     }
 
     @Override
@@ -228,9 +333,7 @@ public class ProductServiceImplementation implements ProductService {
         int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
 
         List<Product> pageContent = products.subList(startIndex, endIndex);
-        Page<Product> filteredProducts = new PageImpl<>(pageContent, pageable, products.size());
-        return filteredProducts; // If color list is empty, do nothing and return all products
-
+        return new PageImpl<>(pageContent, pageable, products.size()); // If color list is empty, do nothing and return all products
 
     }
 

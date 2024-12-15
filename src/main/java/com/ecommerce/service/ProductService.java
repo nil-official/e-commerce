@@ -6,27 +6,29 @@ import org.springframework.data.domain.Page;
 
 import com.ecommerce.exception.ProductException;
 import com.ecommerce.model.Product;
-import com.ecommerce.request.CreateProductRequest;
+import com.ecommerce.request.ProductRequest;
 
 public interface ProductService {
 
     // only for admin
-    public Product createProduct(CreateProductRequest req) throws ProductException;
+    Product createProduct(ProductRequest req) throws ProductException;
 
-    public String deleteProduct(Long productId) throws ProductException;
+    String deleteProduct(Long productId) throws ProductException;
 
-    public Product updateProduct(Long productId, Product product) throws ProductException;
+    Product fullUpdate(Long productId, ProductRequest product) throws ProductException;
 
-    public List<Product> getAllProducts();
+    Product partialUpdate(Long productId, ProductRequest req) throws ProductException;
+
+    List<Product> getAllProducts();
 
     // for user and admin both
-    public Product findProductById(Long id) throws ProductException;
+    Product findProductById(Long id) throws ProductException;
 
-    public List<Product> findProductByCategory(String category);
+    List<Product> findProductByCategory(String category);
 
-    public List<Product> searchProduct(String query);
+    List<Product> searchProduct(String query);
 
-    //	public List<Product> getAllProduct(List<String>colors,List<String>sizes,int minPrice, int maxPrice,int minDiscount, String category, String sort,int pageNumber, int pageSize);
-    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize);
+    // List<Product> getAllProduct(List<String>colors,List<String>sizes,int minPrice, int maxPrice,int minDiscount, String category, String sort,int pageNumber, int pageSize);
+    Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize);
 
 }

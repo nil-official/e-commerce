@@ -11,20 +11,20 @@ import com.ecommerce.mapper.OrderMapper;
 import com.ecommerce.dto.AddressDto;
 import com.ecommerce.dto.OrderDto;
 import com.ecommerce.model.*;
+import com.ecommerce.repository.*;
 import com.ecommerce.service.CartService;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.utility.DtoValidatorUtil;
+import com.ecommerce.utility.QuantityCalculatorUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.exception.OrderException;
-import com.ecommerce.repository.AddressRepository;
-import com.ecommerce.repository.OrderItemRepository;
-import com.ecommerce.repository.OrderRepository;
-import com.ecommerce.repository.UserRepository;
 import com.ecommerce.user.domain.OrderStatus;
 import com.ecommerce.user.domain.PaymentStatus;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class OrderServiceImplementation implements OrderService {
@@ -34,6 +34,7 @@ public class OrderServiceImplementation implements OrderService {
     private AddressRepository addressRepository;
     private UserRepository userRepository;
     private OrderItemRepository orderItemRepository;
+    private ProductRepository productRepository;
 
     private OrderDto generateOrder(User user, OrderAddress orderAddress) throws OrderException {
         // Get the cart of the user
@@ -59,7 +60,35 @@ public class OrderServiceImplementation implements OrderService {
 
             OrderItem createdOrderItem = orderItemRepository.save(orderItem);
             orderItems.add(createdOrderItem);
+
+            // Get the associated product from the order item
+            Product product = item.getProduct();
+
+            // Check if there's enough quantity available to fulfill the order for each size
+            for (Size size : product.getSizes()) {
+                if (size.getQuantity() < item.getQuantity()) {
+                    throw new OrderException("Not enough stock for size: " + size.getName());
+                }
+
+                // Update the quantity of the size by checking the size name
+                if (size.getName().toString().equals(item.getSize())) {
+                    // Reduce the available quantity of the size
+                    size.setQuantity(size.getQuantity() - item.getQuantity());
+                }
+
+            }
+
+            // Save the updated sizes in the product
+            product.setSizes(product.getSizes());
+
+            // Update the total quantity of the product
+            product.setQuantity(QuantityCalculatorUtil.getTotalQuantity(product.getSizes()));
+
+            // Save the updated product
+            productRepository.save(product);
+
         }
+
         // Generate a unique order ID
         String orderId = "ORD" + System.currentTimeMillis();
 
@@ -78,6 +107,7 @@ public class OrderServiceImplementation implements OrderService {
         createdOrder.setOrderStatus(OrderStatus.PENDING);
         createdOrder.getPaymentDetails().setRazorpayPaymentStatus(PaymentStatus.PENDING);
         createdOrder.setCreatedAt(LocalDateTime.now());
+
         // Save the order
         Order savedOrder = orderRepository.save(createdOrder);
         // Map the saved order to OrderDto
