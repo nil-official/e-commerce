@@ -119,6 +119,10 @@ public class CartServiceImplementation implements CartService {
             } else {
                 // If the item is already in the cart, update its quantity and price
                 int updatedQuantity = existingCartItem.getQuantity() + quantities;
+
+                // Check if the requested size is available
+                checkSizeAvailability(product, req.getSize(), updatedQuantity);
+
                 existingCartItem.setQuantity(updatedQuantity);
 
                 int updatedPrice = updatedQuantity * product.getDiscountedPrice();
