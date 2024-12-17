@@ -31,13 +31,10 @@ public class CartItemServiceImplementation implements CartItemService {
     @Override
     public CartItem createCartItem(CartItem cartItem) {
 
-//        cartItem.setQuantity(1);
         cartItem.setPrice(cartItem.getProduct().getPrice() * cartItem.getQuantity());
         cartItem.setDiscountedPrice(cartItem.getProduct().getDiscountedPrice() * cartItem.getQuantity());
+        return cartItemRepository.save(cartItem);
 
-        CartItem createdCartItem = cartItemRepository.save(cartItem);
-
-        return createdCartItem;
     }
 
     @Override
@@ -45,7 +42,6 @@ public class CartItemServiceImplementation implements CartItemService {
 
         CartItem item = findCartItemById(id);
         User user = userService.findUserById(item.getUserId());
-
 
         if (user.getId().equals(userId)) {
 
@@ -63,12 +59,8 @@ public class CartItemServiceImplementation implements CartItemService {
 
     @Override
     public CartItem isCartItemExist(Cart cart, Product product, String size, Long userId) {
-
-        CartItem cartItem = cartItemRepository.isCartItemExist(cart, product, size, userId);
-        return cartItem;
-
+        return cartItemRepository.isCartItemExist(cart, product, size, userId);
     }
-
 
     @Override
     public void removeCartItem(Long userId, Long cartItemId) throws CartItemException, UserException {
@@ -83,21 +75,21 @@ public class CartItemServiceImplementation implements CartItemService {
         if (user.getId().equals(reqUser.getId())) {
             cartItemRepository.deleteById(cartItem.getId());
         } else {
-            throw new UserException("you can't remove anothor users item");
+            throw new UserException("you can't remove another users item");
         }
 
     }
 
     @Override
     public CartItem findCartItemById(Long cartItemId) throws CartItemException {
+
         Optional<CartItem> opt = cartItemRepository.findById(cartItemId);
 
-        if (opt.isPresent()) {
-            return opt.get();
+        if (opt.isEmpty()) {
+            throw new CartItemException("cartItem not found with id : " + cartItemId);
         }
-        throw new CartItemException("cartItem not found with id : " + cartItemId);
+        return opt.get();
+
     }
-
-
 
 }

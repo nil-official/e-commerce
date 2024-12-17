@@ -6,11 +6,10 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddItemRequest {
+public class AddToCartRequest {
 
 	private Long productId;
 	private String size;
 	private int quantity;
-//	private Integer price;
 	
 }

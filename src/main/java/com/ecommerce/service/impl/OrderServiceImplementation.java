@@ -38,7 +38,7 @@ public class OrderServiceImplementation implements OrderService {
 
     private OrderDto generateOrder(User user, OrderAddress orderAddress) throws OrderException {
         // Get the cart of the user
-        Cart cart = cartService.findUserCart(user.getId());
+        Cart cart = cartService.findCart(user.getId());
 
         if (cart.getCartItems().isEmpty()) {
             throw new OrderException("Cart is empty");
